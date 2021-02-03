@@ -43,7 +43,7 @@ To generate credential follow this [article](https://docs.aws.amazon.com/sdk-for
  4. Upload your content
  5. Configure a custom domain if you want to use your own domain
 
-Benefits of hosting s static website on Amazon S3 are as follows:
+Benefits of hosting a static website on Amazon S3 are as follows:
 * Low cost  
 * Reliable routing  
 * Low latency  
@@ -51,7 +51,7 @@ Benefits of hosting s static website on Amazon S3 are as follows:
 
 __Hosting a static website from Amazon Management Console ([See Guide](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html))__
 1. Go to the S3 section of the Management Console and create a Bucket and allow _all_ public access.
-2. Select the newly created bucket from S3 list of bucket. Click on the __Properties__ tab, scroll down to __Static website hosting__ and enable it.  Copy the generated website address.  
+2. Select the newly created bucket from S3 list of buckets. Click on the __Properties__ tab, scroll down to __Static website hosting__ and enable it.  Copy the generated website address.  
 3. Enter the name for your index file and error file for you website and save.
 4. Go to the __Permissions__ tab of the Bucket's page. Scroll down to __Bucket Policy__, edit and add JSON  
 ```
@@ -99,13 +99,13 @@ Then attach the policy to your IAM account or group used for this process.
 6. Visit the website address to see the site.   
 __Note:__ Amazon S3 website do not support HTTPS, only HTTP.  
 
-You can use _CNAME_ for the website endpoint to access with you custom domain name.  
+You can use _CNAME_ for the website endpoint to access with your custom domain name.  
 
 To programmatically configure a bucket as a static website [see guide](https://docs.aws.amazon.com/AmazonS3/latest/dev/ManagingBucketWebsiteConfig.html).  
-TO configure custom domain for your website using Route 53 [see here](https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html)  
+To configure custom domain for your website using Route 53 [see here](https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html)  
 
 __How to configure S3 server access logging__  
-1. Amazon S3 Management Console and select the bucket.   
+1. Go to Amazon S3 Management Console and select the bucket.   
 2. Click on the __Property__ tab on the bucket's page  and scroll down to __Server access logging__ and click on the edit button and enable it.
 3. Specify the bucket and path you want to save the logs to. Something like this `s3://<your_bucket>/<your_logs_path>`.  Click the save button. You can even choose to log to another bucket by specified the target bucket's name instead.  
 4. If you go to __Permissions__ tab and scroll down to the __Access control list (ACL)__ you will see that _S3 log delivery group_ have been added to the _Grantee_ list.
@@ -114,8 +114,21 @@ Note that storing log objects and accessing log objects are charged in the same 
 If you want to regularly delete log objects you can manage the life cycle of objects by using life cycle rules.  
 
 __How to configure a static website suing a custom domain__  
-Todo: Return when you have secured your domain  
+To configure a website with your domain you need to
+1. Create an S3 buckets, namely `<your_domain>` or `<your_subdomain>.<your_domain>` e.g `blog.tochukwu.xyz`.
+2. Configure the bucket for static website hosting and upload your files as describe earlier above.
+3. Go to Route 53 section of the Console and Click on Hosted _zoned_ menu.
+4. Create a hosted zone and in your Hosted zone, Create a record.
+5. When creating a record, you select the _Alias_ option and map your site to your S3 bucket using the _Route traffic to Info_ select dropdown.
+6. If you were not using an S3 bucket you can map the record name (website domain/subdomain) to the IP address by not selecting _Alias_ options.
 
+You can have  `www` subdomain redirected to you site e.g `www.example.com` -> `example.com`.  
+1. Create a bucket with the subdomain e.g `www.example.com`.
+2. Click on the bucket's __Properties__ tab, go to __Static website hosting__ and click edit
+3. Select _Enable_ and also _Redirect requests for an object_ options and enter you original site domain e.g `example.com` and save
+4. Go to Route 53 Console, click on the _Hosted zones_ menu and selected thee hosted zone for your website.
+5. Create a record and use `www.example.com` as the record name just like you did in step 5 above
+6. After sometime request to `www.example.com` will start redirecting to `example.com`
 
 __How to configure a static website on Amazon S3 bucker with AWS CLI__    
 First, you have to install the AWS CLI.
@@ -175,3 +188,81 @@ To learn more about AWS CLI (S3Api) see [cli s3api docs](https://docs.aws.amazon
 For all CLI commands see [cli latests](https://docs.aws.amazon.com/cli/latest/)
 
 ## Chapter 3: Calculating Cost with the AWS Simple Monthly Calculator
+[AWS S3 Calculator](https://calculator.s3.amazonaws.com/index.html)   
+Todo: Return to this
+
+## Chapter 4: Deploying a Static Website with CloudFormation  
+__Introduction__   
+_CloudFormation_ is a deployment tool that helps to provision your infrastructure using AWS resources such as EC2, IAM, RDB, Route 53, S3 and so on by creating a template to code your infrastructure in it so that you can deploy your infrastructure repeatedly and delete it as well.   
+There is no additional charge for _CloudFormation_ itself, but you need to pay for AWS resources that your create.    
+
+__Sample Templates__
+*  [S3Hosting.json](https://s3-ap-northeast-1.amazonaws.com/hashnao.info/CloudFormation/S3Hosting.json) for static websites  
+* [Simple Lamp Stack](https://s3.eu-west-2.amazonaws.com/cloudformation-templates-eu-west-2/LAMP_Single_Instance.template) with EC2 and local MySQL  
+
+__Create a Stack__  
+Go to the _CloudFormation_ section of the management console and create a new Stack.  
+You can either select a template from a list of sample templates, upload your own template or supply a link for an existing template to create a stack.  
+
+__Deleting a Stack__  
+Make sure all of the objects are deleted before deleting the S3 bucket of the stack because cloud formation cannot delete objects in a bucket.  
+
+__How to deploy a template with AWS CLI__  
+First, you need to configure an _IAM_ user and a policy to enable full access to _S3_, full access to _CloudFront_ and issue an _IAM_ credential.  
+1. Set environment variables
+```
+$ stack_name="static-shop-stack"
+$ template_url="https://s3-ap-northeast-1.amazonaws.com/hashnao.info/CloudFormation/S3Hosting.json"  
+$ HostingBucketName="static-shop-bucket"
+$ LoggingBucketName="static-shop-logging-bucket"
+```  
+
+2. Validate your template
+```
+$ aws cloudformation validate-template --profile s3-node-app --region eu-west-2 --template-url ${template_url}
+```
+If you are using the default profile of your `credentials` file, then you do not need to supply the `--profile` flag.  
+3. Create the stack  
+```
+$ aws cloudformation create-stack --stack-name ${stack_name} --template-url ${template_url} --parameters ParameterKey=HostingBucketName,ParameterValue=${HostingBucketName} ParameterKey=LoggingBucketName,ParameterValue=${LoggingBucketName} --profile s3-node-app --region eu-west-2
+```
+
+__AWS CLI Cloudformation commands__    
+To list all your stacks  
+```
+$ aws cloudformation list-stacks --region eu-west-2
+```
+
+To list only stacks with status _CREATE_COMPLETE_
+```
+$ aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --region eu-west-2
+```
+
+To see the detailed description of a stack  
+```
+$  aws cloudformation describe-stacks --stack-name ${stack_name} --region eu-west-2
+```  
+Note that _stack_name_ is a variable defined earlier whose value is the name of the stack.
+
+To see the stack resources details, use the _describe-stack-resources_ subcommand.
+```
+$ aws cloudformation describe-stack-resources --stack-name ${stack_name} --region eu-west-2
+```
+
+Deleting a stack  
+```
+$ aws cloudformation delete-stack --stack-name ${stack_name} --region eu-west-2
+```
+The _delete_stack_ subcommand does not print any output on the terminal.   
+
+List all the delete stacks using the _--stack-status-filter_ flag   
+```
+$ aws cloudformation list-stacks --stack-status-filter DELETE_COMPLETE --region eu-west-2
+```
+
+__Learn more__  
+* [AWS CLI Cloudformation](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)
+* [Template Basics](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/gettingstarted.templatebasics.html)   
+* [Sample Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-sample-templates.html)  
+
+## Chapter 5: Distributing Your Contents via CloudFront  
