@@ -117,9 +117,9 @@ __How to configure a static website suing a custom domain__
 To configure a website with your domain you need to
 1. Create an S3 buckets, namely `<your_domain>` or `<your_subdomain>.<your_domain>` e.g `blog.tochukwu.xyz`.
 2. Configure the bucket for static website hosting and upload your files as describe earlier above.
-3. Go to Route 53 section of the Console and Click on Hosted _zoned_ menu.
+3. Go to Route 53 section of the Console and Click on Hosted _zones_ menu.
 4. Create a hosted zone and in your Hosted zone, Create a record.
-5. When creating a record, you select the _Alias_ option and map your site to your S3 bucket using the _Route traffic to Info_ select dropdown.
+5. When creating a record, you select the _Alias_ option and map your site to your S3 bucket using the _Route traffic to Info_ select dropdown. It may take a few minutes before the URL will become active.
 6. If you were not using an S3 bucket you can map the record name (website domain/subdomain) to the IP address by not selecting _Alias_ options.
 
 You can have  `www` subdomain redirected to you site e.g `www.example.com` -> `example.com`.  
@@ -266,3 +266,79 @@ __Learn more__
 * [Sample Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-sample-templates.html)  
 
 ## Chapter 5: Distributing Your Contents via CloudFront  
+Amazon _CloudFront_ CDN is a content delivery service that is used to speed up the distribution of your static and dynamic content, for example, _.html_, _.css_, _.php_, image filed and streaming media to the end users. CloudFront delivers your content stored in origin servers such as Amazon S3 bucket or web servers through global network data centers called edge locations all
+over the world.  
+All you need to do is create a CloudFront distribution to define your origin server,
+cache behavior settings, and distribution settings, and store your content in the origin server, so
+that CloudFront distributes the configuration to CloudFront edge locations and adds the cache in
+the edge locations.
+
+__Step to configure a CloudFront distribution on the Amazon S3 bucket__   
+1. Create a S3 bucket  
+2. Create a CloudFront web distribution and specify the S3 bucket as the origin server.
+3. Store your content on the S3 bucket.  
+4. You can add more origins to your CloudFront distribution later.  
+
+After creating a CloodFront web distribution, the distribution will be available within the next 15 minutes. The users will receive the content through the closest edge location, not directly from the configures s3 bucket.  
+
+__How to configure a CloudFront distribution on the Amazon S3 bucket__
+1. Sign in to your AWS management console and go to the CloudFront section.  
+2. Click on The __Create Distribution__ button  
+3. Under `Origin Domina Name`, select the S3 bucket that you want to use as the origin server. Make sure your S3 bucket is publicly accessable.
+4. You may use the default settings under the `Origin Settings` and `Default Cache Behavior Settings` sections of the form.  
+5. Take note of the `Price` class option in the `Distribution Settings` section and select the value that best suits your pocket.
+6. You can specify your domain name under `Alternate Domain Names (CNAMEs)` if you want to use your own domain name. To learn more, see [CNAME DeveloperGuide](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html)  
+7. To use your own domain name you must configure an SSL certificate using AWS Certificate Manager or upload one made using a third party service. See [AWS Certificate Manager](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) to learn more.  
+8. You can either use the default `*.cloudfront.net` SSL certificate or you can upload your own for your custom CNAME. Learn more at [AWS Cloudfront Custom SSL](https://aws.amazon.com/cloudfront/custom-ssl-domains/) .  
+9. After reviewing and selecting the option, check the __Create Distribution__ button at the end of the form. Your CloudFront distribution will then be in `In Progress` status. It should take about 15 minutes to complete after which the status will change to `Deployed`.  
+10. Upload you assets to your origin S3 bucket using the S3 section of AWS management console or using the CLI  
+```
+$ aws s3 sync book_img/ s3://image-distribution-origin/ojlink-books --region eu-west-2
+```
+
+__Inspect your CloudFront Distribution__
+* Copy the _Domain Name_ of the CloudFront distribution and visit it will a browser to confirm. You can use both HTTP and HTTPS.     
+* Use the  `dig` command to lookup the domain name for the distribution:
+```
+$ dig d3ksa1f4kfjsu4.cloudfront.net
+```
+`dig` is a Linux utility that will show you the IP addresses associated with the domain name.  
+The IP addresses shown are the IPs for the edge locations around the world.   
+
+__Using an alias record instead of alternate domain names (CNAMEs)__    
+You can choose to use an alias record or CNAME to a domain name of your distribution with Route 53 as a DNS service.   
+If you choose to use an alias record other than CNAME, Route 53 will not chare you for alias queries to the CloudFront distribution. For more see [Alias DeveloperGuide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html)   
+
+__To configure a certificate using AWS Certificate Manager (ACM)__    
+If you are going to use your own domain name (e.g http://images.mydomain.com) instead of CloudFront generated domain (e.g, http://d3ksa1f4kfjsu4.cloudfront.net/), then you need to request a certificate for your domain using Route 53.  
+1. Go to the AWS Certificate Manager section of the management console.  
+2. Click on the `Get Started` button under `Provision cetificates`, select the `Request a public certificate` option and click `Request a certificate` button.  
+3. Enter the name of your certificate and click `Next` button.  
+4. Select the `DNS validation` option and click `Next` button
+5. You may enter a tag name which is optional and click `Review` button.
+6. Click the `Confirm and Request` button.
+7. Download the `DNS` configuration file which contains a generated Record Name  
+8. B=Now to validate your request, go to Route53 and click on `Hosted Zones`, click on your domain and click `Create record`  
+9. Use the `Record Name` and `Record Value` found in the downloaded file to create a `CNAME` record type.
+10. Your requested certificate is now validated and you should see the status on your certificate request list change from `Pending validated` to `validated` or complete.   
+
+__To Configure an alias record for the CloudFront distribution with Amazone Route 53__  
+To use you custom domain (e.g http://images.mydomain.com) instead of cloudFront automatically generate url (e.g, http://d3ksa1f4kfjsu4.cloudfront.net/), you need to configure an alias.
+1. Make sure you enter your desired domain name in the `Alternate Domain Names (CNAMEs)` textbox under `Distribution Settings` when creating your distribution. You can also update this value for an already existing distribution.  
+2. Sign into the management console to navigate to the Route 53 section.  
+3. Click on the __Hosted Zones__ menu on the left navigation bar.  
+4. Click on your domain name and then click on the __Create Record__ button.   
+5. Enter your record name, select the `A` record type, switch on the `Alias` option and select `Alias to CloudFront distibution`, select you CloudFront Distribution and click on the save button.  
+6. You should now be able to access your cloud front distribution using you custom domain.
+
+__Amazon CloudFront limits or Quotas__  
+AWS service limits exists by default. If you expect more than the default limit value for one of the resources (for example, you need more bandwidth for an event next week), you can create a case to request a higher limit via AWS support dashboard. See [AWS service quotas](https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html#limits_cloudfront)
+
+__How to compare costs for data transfer between S3 and CloudFront__  
+Todo: Return back later...  
+
+To learn more about changing the cache behavior, checkout [CloudFront Developer Guide](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesCacheBehavior)
+
+[CloudFront Pricing](https://aws.amazon.com/cloudfront/pricing/)  
+[CloudFront CNAMEs](http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html)  
+[CloudFront Custom SSL](https://aws.amazon.com/cloudfront/custom-ssl-domains/)
