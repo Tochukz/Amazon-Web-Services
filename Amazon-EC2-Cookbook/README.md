@@ -35,11 +35,110 @@ This will list the regions available in AWS.
 __Launching EC2 instances using EC2-Classic and EC2-VPC__  
 If you attach an EIP (Elastic IP) to EC2-Classic instance, it will get dissociated when you stop the instance. But for VPC EC2 instance, it remains associated even after you stop it. We can create subnets, routing tables, and Internet gateways in VPC.  
 
-1. Go to EC2 Management console and click on the `AMI` link under __Images__ on the left navigation bar.  
-2. Copy the image ID of your choice image.  
-3.
+1. First, you create a key pair
+```
+$ aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pem
+```  
+Set permission of your private key file so that only you can read it
+```
+$ chmod 400 MyKeyPair.pem
+```
+To verify that the private key matches the public key stored in AWS, you can display the fingerprint for your keypair  
+```
+$ aws ec2 describe-key-pairs --key-name MyKeyPair
+```  
+To delete you keypair in the future  
+```
+$ aws ec2 delete-key-pair --key-name MyKeyPair
+```
+2. Create a security group  
+A security group operates as a firewall with rules that determine what network traffic to allow. The security group can be used in a VPC or EC2-Classic shared flat network.   
+To create a security group for a specific VPC  
+```
+$ aws ec2 create-security-group --group-name my-sg --description "My security group" --vpc-id vpc-1a2b3c4d
+```
+This will generate a GoupId such as `sg-903004f8`
+To view details about the security group, use the `group-ids` flag
+```
+$ aws ec2 describe-security-groups --group-ids sg-903004f8
+```
+To create a security group for EC2-Classic
+```
+$ aws ec2 create-security-group --group-name my-sg --description "My security group"
+```
+To view details about the security group you can use the `group-ids` or `group-name` flag   
+```
+$ aws ec2 describe-security-groups --group-names my-sg
+```
 
-This does not work - InvalidGroup, Security group sg-0240a63b2aa3b8b42 does not exits 
+3. Add rules to you security group  
+To add a rule to the security group for EC2-VPC, use the `group-id` of the security group.
+For windows instance, add a rule to allow inbound traffic on TCP 3389 to support Remote Desktop Protocol.  
 ```
-$ aws ec2 run-instances --image-id ami-0c84a8adbf86b25cd --count 1 --instance-type t2.micro --key-name ChucksKeyName --security-group-ids sg-0240a63b2aa3b8b42
+$ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 3389 --cidr 203.0.113.0/24
 ```
+For linux instance, add a rule to  inbound traffic on TCP port 22 to support SSH connections.
+```
+$ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 22 --cidr 203.0.113.0/24
+```
+Note the `203.0.113.0/24` represents you public IP and range.
+To view the changes to the security group, you can run the `describe-security-groups` command again.  
+To add a rule to the security group for EC2-Classic you may either use the `group-id` or the `group-name`.  
+ ```
+ $ aws ec2 authorize-security-group-ingress --group-name my-sg --protocol tcp --port 22 --cidr 203.0.113.0/24
+ ```  
+To delete a security group  
+```
+$ aws ec2 delete-security-group --group-id sg-903004f8
+```
+This will not work if the security group is currently attached to an environment. For EC2-Classic you can also use the `group-name` instead of the `group-id`
+
+4. Get an AMI ID.
+Go to EC2 Management console and click on the `AMI` link under __Images__ on the left navigation bar. Copy the image ID of your choice image from the list of AMIs. For _Ubuntu Server 20.04 LTS (HVM), SSD_ the ID is `ami-096cb92bb3580c759` and for _Microsoft Windows Server 2019 Base_ it is `ami-08698c6c1186276cc`.
+5. Lunch your instance using the AMI ID an
+```
+$ aws ec2 run-instances --image-id ami-0244a5621d426859b --count 1 --instance-type t2.micro --key-name MyKeyPair --security-group-ids sg-903004f8
+```  
+For EC2-Classic, you can use the `--security-groups` flag (with the group name as value) instead of the `--security-group-ids` flag which must be used for EC2-VPC.  
+
+6. To stop the instance
+First display the instance details:
+```
+$ aws ec2 describe-instances
+```
+Copy the `InstanceId` from the details. Then use the `InstanceId` to stop the instance.  
+```
+$ aws ec2 stop-instances --instance-ids i-xxxxxxxxxxx
+```
+
+7. To start the instance again
+```
+$ aws ec2 start-instances --instance-ids i-xxxxxxxxxxx
+```
+
+8. Connect to the instance via SSH  
+The instance must be running, so view instance details
+```
+$ aws ec2 describe-instances
+```  
+Then copy the instance's `PublicDnsName`. It will be used  for the `ssh` command.  
+Make sure your local computer's public IP is listed in the instance security group `IpPermissions`.
+```
+$ aws ec2 describe-security-groups
+```
+If you public IP is not listed, then add it to the security group
+```
+$ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 3389 --cidr 203.0.113.0/24
+```
+Where you public IP is 203.0.113.0.  
+SSH using the DNS name and your key pair
+```
+$ ssh -i your-key-pair.pem your-instance-user@your-instance-public-dns-name
+```
+
+__NB:__ The AMI ID for a given OS varies from one region to another. So to avoid _InvalidAMIID.NotFound_ error, make sure that the active region on your console when you copy the AMI ID is the same as the default region set in you `~/.aws/config` file.
+
+See [AWS CLI EC2](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html) for reference.
+
+__Allocating Elastic IP address__  
+If you stop the instance in EC2-Classic the EIP is disassociated from the instance, and you have to associate it again when you start the instance. Fr EC2-VPC the EIP remains associated with the EC2 instance.  
