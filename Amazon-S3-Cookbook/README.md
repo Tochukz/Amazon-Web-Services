@@ -134,7 +134,22 @@ __How to configure a static website on Amazon S3 bucker with AWS CLI__
 First, you have to install the AWS CLI.
 * For window, download the MSI installer at [awscli.amazonaws.com/AWSCLIV2.msi](https://awscli.amazonaws.com/AWSCLIV2.msi) and run the installer.
 
-* For Linux, see the installation guide [here](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html)
+* For Ubuntu (Linux x86 64bits),
+First install the `unzip` utility if you don't already have it  
+```
+$ sudo apt install unzip
+```
+Download, unzip and install AWS CLI V2
+```
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ unzip awscliv2.zip
+$ sudo ./aws/install
+```
+Verify the installation
+```
+$ aws --version
+```
+For more on Linux installation ,see the installation guide [here](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html).
 
 Make sure your computer data/time is correct, because AWS CLI uses it to sign requests cryptographically. And request may fail if the date/time is incorrect.   
 

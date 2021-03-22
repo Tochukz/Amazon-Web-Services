@@ -70,7 +70,10 @@ To view details about the security group you can use the `group-ids` or `group-n
 ```
 $ aws ec2 describe-security-groups --group-names my-sg
 ```
-
+To delete a security group  
+```
+$ aws ec2 delete-security-group --group-id sg-xxxxxxxxxxx
+```
 3. Add rules to you security group  
 To add a rule to the security group for EC2-VPC, use the `group-id` of the security group.
 For windows instance, add a rule to allow inbound traffic on TCP 3389 to support Remote Desktop Protocol.  
@@ -82,7 +85,11 @@ For linux instance, add a rule to  inbound traffic on TCP port 22 to support SSH
 $ aws ec2 authorize-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 22 --cidr 203.0.113.0/24
 ```
 Note the `203.0.113.0/24` represents you public IP and range.
-To view the changes to the security group, you can run the `describe-security-groups` command again.  
+To view the changes to the security group, you can run the `describe-security-groups` command again.   
+To remove a rule from your security group  
+```
+$ aws ec2 revoke-security-group-ingress --group-id sg-903004f8 --protocol tcp --port 22 --cidr 203.0.113.0/24
+```
 To add a rule to the security group for EC2-Classic you may either use the `group-id` or the `group-name`.  
  ```
  $ aws ec2 authorize-security-group-ingress --group-name my-sg --protocol tcp --port 22 --cidr 203.0.113.0/24
@@ -135,10 +142,21 @@ SSH using the DNS name and your key pair
 ```
 $ ssh -i your-key-pair.pem your-instance-user@your-instance-public-dns-name
 ```
-
-__NB:__ The AMI ID for a given OS varies from one region to another. So to avoid _InvalidAMIID.NotFound_ error, make sure that the active region on your console when you copy the AMI ID is the same as the default region set in you `~/.aws/config` file.
+__NB:__ The AMI ID for a given OS varies from one region to another. So to avoid _InvalidAMIID.NotFound_ error, make sure that the active region on your console when you copy the AMI ID is the same as the default region set in you `~/.aws/config` file.   
+You can override the default region set in you config file by using the region flag `--region eu-west-2` or setting the `AWS_REGION` environment variable on your terminal window.  
+9. To terminate the instance  
+```
+$ aws ec2 terminate-instances --instance-id i-xxxxxxxx
+```
 
 See [AWS CLI EC2](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html) for reference.
 
+
 __Allocating Elastic IP address__  
 If you stop the instance in EC2-Classic the EIP is disassociated from the instance, and you have to associate it again when you start the instance. Fr EC2-VPC the EIP remains associated with the EC2 instance.  
+
+__Windows Instance__   
+[How to connect you instance](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html?icmpid=docs_ec2_console)
+[Free Tier](https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&all-free-tier.sort-order=asc&awsm.page-all-free-tier=1&awsf.Free%20Tier%20Types=tier%2312monthsfree)
+[AWS EC2 Forum](https://forums.aws.amazon.com/forum.jspa?forumID=30)  
+[EC2 Windows Guide](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/concepts.html)
