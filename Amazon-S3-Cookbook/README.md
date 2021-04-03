@@ -34,6 +34,7 @@ aws_secret_access_key = <YOUR_SECRET_ACCESS_KEY>
 ```
 To generate credential follow this [article](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
 
+To learn about AWS CLI commands see [AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)
 ## Chapter 2: Hosting a Static Website on Amazon S3 Bucket  
 [S3 Pricing](https://aws.amazon.com/s3/pricing/)  
  To host a static website on Amazon S3:

@@ -195,4 +195,9 @@ There are several ways that an instance may be addressed over the web upon creat
 
 In the context of an Amazon VPC, we also have __Private IP addresses__ and __Elastic Network Interfaces__ (ENIs).  
 
-Continue from __Virtual Firewall Protection page [99]__
+Continue from __Virtual Firewall Protection page [99]__  
+
+## Chapter 4: Amazon Virtual Private Cloud (Amazon VPC)  
+
+__Question and Answers__  
+Questions - Page[160], Answers - Page[496]
