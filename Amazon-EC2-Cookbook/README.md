@@ -1,5 +1,5 @@
 # Amazon EC2 Cookbook  (2015)
-__By  Sekhar Reddy and Autobindo Sarkar__  
+__By Sekhar Reddy and Autobindo Sarkar__  
 
 ## Chapter 1: Selecting and Configuring Amazon EC2 Instances  
 __Choosing the right AWS EC2 instance types__  

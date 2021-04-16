@@ -121,3 +121,23 @@ AWS provides NAT instances and NAT gateways to allow instances deployed in priva
 
 __NAT instance__  
 A NAT instance is an Amazon Linux AMI that is designed to accept traffic from instances within a private subnet, translate the source IP address to the public IP address of the NAT instance, and forward the traffic to the IGW. The NAT instance is stateful, they have the string `amzn-ami-vpc-nat` in their names which is searchable in the Amazon EC2 console.  
+
+__NAT Gateway__  
+A _NAT gateway_ is an Amazon managed resource that is designed to operate just like a NAT instance but it is simpler to manage and highly available within an Availability Zone.  
+Like a _NAT instance_, this managed service allows outbound Internet communication and prevents the instances from receiving traffic initiated by someone on the internet.
+
+__Virtual Private Gateways (VPGs), Customer Gateways (CGWs), and Virtual Private Networks (VPNs)__    
+Amazon VPC offers two ways to connect a corporate network to a VPC: VPG ang CGW.   
+A _virtual private gateway (VPG)_ is the _virtual private network (VPN)_  concentrator on the AWS side of the VPN connection between the two networks. A _customer gateway (CGW)_ represents a physical device or a software application on the customer's side of the VPN connection.  
+If the CGW supports Border Gateway Protocol (BGP), then configure the VPN connection for dynamic routing. Otherwise, configure the connections for static routing.  
+Amazon VPC also supports multiple CGWs, each having a VPN connection to a single VPG (many-to-one design). In order to support this topology, the CGW IP address must be unique within the region.  
+The VPN connection consists of two Internet Protocol Security (IPSec) tunnels for higher availability to the Amazon VPC.  
+
+__Exam Essential__
+Page [154]  
+
+__Exercises__  
+Page [157]  
+
+__Review Questions__
+Question Page[160], Answers Page[496]
