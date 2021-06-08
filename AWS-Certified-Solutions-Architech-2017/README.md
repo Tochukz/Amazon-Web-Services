@@ -15,12 +15,12 @@ __Cloud Computing Deployment Models__
 1. _All-in_ cloud deployment
 2. Hybrid deployment
 
-__Review Question:__
+__Review Question__   
 Question - Page [56]  
 Answers  - Page [490]
 
 __Global Infrastructure__  
-You can achieve high availability by deploying your application across multiple _Availability Zones_. Redundant instances for each tier (for example, web, application and database) of an application should be placed in distinct _Availability Zones_, thereby creating a multisite solution. At a minimum, the goal is to have an independent copy of each application stack in two or more _Availability Zones__   
+You can achieve high availability by deploying your application across multiple _Availability Zones_. Redundant instances for each tier (for example, web, application and database) of an application should be placed in distinct _Availability Zones_, thereby creating a multisite solution. At a minimum, the goal is to have an independent copy of each application stack in two or more _Availability Zones_  
 
 __Accessing the Platform__   
 To access AWS Cloud services, you can use the
@@ -167,6 +167,7 @@ Because you are paying for the computing power of the instance, you are charges 
 They key to launching instances are   
 1. the amount of virtual hardware dedicated to the instance  
 2. the software loaded on the instance  
+
 These two dimensions of a new instance are controlled, respectively, by the instance type and the AMI(Amazon Machine Image).  
 
 __Sample Instance Type Families__    
@@ -186,14 +187,14 @@ The _Amazon Machine Image (AMI)_ defines the initial software that will be on an
 There are four sources of AMIs:  
 1. __Published by AWS__ - These include multiple distributions of Linux (including Ubuntu, Red Hat, and Amazon's own distribution) and Windows 2008 and Windows 2012. As with any OS installation, you should immediately apply all appropriate patches upon launch.  
 2. __The AWS Marketplace__  - Instances launched from an AWS Marketplace AMI incur the standard hourly cost of the instance type plus an additional per-hour charge for the additional software except for open-source packages which have no additional charge.  
-3. __Generating from Existing Instances__ - Am AMI can be created from an existing Amazon EC2 instance. A launched instance is first configured to meet all the customer's corporate standards and the an AMI is then generated from the configured instances and used to generate all instances of that OS.  
-4. __Uploading Virtual Servers__ - Using AWSVM Import/Export service, customers can create images from various virtualization formats, including raw, VHD, VMDK, and OVA.  Make sure you are compliant with the licensing terms of your OS vendor.   
+3. __Generating from Existing Instances__ - Am AMI can be created from an existing Amazon EC2 instance. A launched instance is first configured to meet all the customer's corporate standards and then an AMI is generated from the configured instances and used to lunch new instances of that OS.  
+4. __Uploading Virtual Servers__ - Using AWS VM Import/Export service, customers can create images from various virtualization formats, including raw, VHD, VMDK, and OVA.  Make sure you are compliant with the licensing terms of your OS vendor.   
 
 __Addressing an Instance__
 There are several ways that an instance may be addressed over the web upon creation:  
-* __Public Domain Name System (DNS) Name__ This DNS name can not be specified and persists only while the instance is running and cannot be transferred to another instance.  
-* __Public IP__  This address persists only while the instance is running and cannot be transferred to another instance.   
-* __Elastic IP__  This address is a public address that can be reserved and associated with an Amazon EC2 instance. This IP address persists until the customer releases it and can be transferred to a replacement another instance.   
+* __Public Domain Name System (DNS) Name__ - This DNS name cannot be specified and persists only while the instance is running and cannot be transferred to another instance.  
+* __Public IP__ - This address persists only while the instance is running and cannot be transferred to another instance.   
+* __Elastic IP__ - This address is a public address that can be reserved and associated with an Amazon EC2 instance. This IP address persists until the customer releases it and can be transferred to a replacement or another instance.   
 
 In the context of an Amazon VPC, we also have __Private IP addresses__ and __Elastic Network Interfaces__ (ENIs).  
 
@@ -201,17 +202,14 @@ __Virtual Firewall Protection page__
 Security groups are applied at the instance level, as opposed to a traditional on-premises firewall that protects at the perimeter.  
 
 #### The Lifecycle of Instances  
-__Bootstrapping__  
-The process of providing code to be run on an instance at launch is called _bootstrapping__.  
-One of the parameters when an instance is launched is a string value called _UserData_. This string is passed to the operating system to be executed as part of the launch process the first time the instance is booted. ON Linux instances this can be shell script, and on Windows instances this can be a batch style scrip r a PowerShell script. The script can perform tasks such as:  
+__Bootstrapping__    
+The process of providing code to be run on an instance at launch is called _bootstrapping_.  
+One of the parameters when an instance is launched is a string value called _UserData_. This string is passed to the operating system to be executed as part of the launch process the first time the instance is booted. ON Linux instances this can be shell script, and on Windows instances this can be a batch style scrip or a PowerShell script. The script can perform tasks such as:  
 * Installing _Chef_ or _Puppet_ and assigning the instance a role as the configuration management software can configure the instance.
 
-__Tip__: UserData is store with the instance and is not encrypted, so it is important to not include any secret such as password or keys in the UserData.
+__Tip__: UserData is stored with the instance and is not encrypted, so it is important to not include any secret such as password or keys in the UserData.
 
-__To Lanch EC2 instance with UserData__  
-Todo...
-
-__VM Import/Export__
+__VM Import/Export__   
 VM Import/Export enables you to easily import Virtual Machines (VMs) from you existing environment as an Amazon EC2 instance and export then back to your on-premise environment. You can only export previously imported Amazon EC2 instances. Instances launched within AWS from AMIs cannot be exported.   
 
 __Instance Metadata__  
@@ -223,12 +221,12 @@ __Managing Instances__
 Tags can be used to identify attributes of an instance like projects, environment, billable department, and so forth. You can apply up to 10 tags per instance.  
 
 __Modifying an Instance__  
-To change the _Instance Type__  
+To change the _Instance Type_    
 * Stop the instance
 * Select the desired instance type
 * Restart the instance
 
-You can change the _Security Groups_ associated with an instance while the instance is running. For `EC2-Classic`, you can not change the security group after launch.
+You can change the _Security Groups_ associated with an instance while the instance is running. For `EC2-Classic`, you cannot change the security group after launch.
 
 __Termination Protection__  
 In order to prevent termination via the AWS Management Console, CLI, or API, _termination protection_ can be enabled for an instance. While enabled, calls to terminate the instance will fail until termination protected is disabled.  

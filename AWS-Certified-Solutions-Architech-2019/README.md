@@ -6,7 +6,7 @@ Assessment Test Page [27], Answers to Assessment Page [33]
 __Scalability__  
 AWS offers its autoscaling service through which you define a machine image that can be instantly and automatically replicated and launched into multiple instances to meet demand.  
 __Elasticity__  
-n elastic infrastructure will automatically reduce capacity when demand drops.  
+An elastic infrastructure will automatically reduce capacity when demand drops.  
 
 __Cost Management__  
 Cloud computing transitions your IT spending from capital expenditure(capex) framework into something closer to operational expenditure(opex).  See [AWS Calculator](https://calculator.aws/) to estimate the cost of your architecture.  
@@ -15,7 +15,7 @@ Cloud computing transitions your IT spending from capital expenditure(capex) fra
 It is important to always be conscious of the particular region you have selected when you launch new AWS resources, as pricing and service availability can vary from one to next.    
 Endpoint addresses are used to access your AWS resources remotely from within application code or scripts. Prefixes like _ec2_, _apigateway_ or _cloudformation_ are often added to the endpoint to specify a particular AWS service e.g _cloudformation.us-east-2.amazonaws.com_. See [full list](https://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region) of endpoints.  
 
-A VPC is effectively a network address space within which you can create network subnets and associate then with particular availability zones. When configures properly, this architecture can provide effective resource solation and durable replication.  
+A VPC is effectively a network address space within which you can create network subnets and associate then with particular availability zones. When configures properly, this architecture can provide effective resource isolation and durable replication.  
 
 __The AWS Service Level Agreement__  
 The important thing to remember is that it's not if things will fail but when. Build your applications to be geographically disperses and fault tolerant so that when things do break, your users will barely notice.  
@@ -29,7 +29,7 @@ Create a new Bucket
 ```
 $ aws s3 mb s3://chucks.xyz
 ```
-Here my bucket name will be `chucks.xy`
+Here my bucket name will be `chucks.xyz`
 
 Copy a file from you local machine to the bucket  
 ```
@@ -42,7 +42,7 @@ __Other Support Resources__
 * [AWS Well-Architected page](https://aws.amazon.com/architecture/well-architected)  
 
 __Reference__
-List of AWS Regions and endpoints Page[47]
+List of AWS Regions and endpoints Page[47]  
 Exercise Page[52]  
 
 __Review Questions__
@@ -63,11 +63,11 @@ __Configuring an Environment for Your Instance__
 Here there are three primary details to get right: geographic region, virtual private cloud (VPC), and tenancy model.   
 
 __AWS Regions__  
-EC2 resources can be managed only when you're "located within" their region. you set the active region in the console through the drop-down menu at the top of the page and through default configuration values in the AWS CLI or your SDK. You can update your CLI configuration by running `aws configure`.   
+EC2 resources can be managed only when you're "located within" their region. You set the active region in the console through the drop-down menu at the top of the page or through default configuration values for the AWS CLI/SDK. You can update your CLI configuration by running `aws configure`.   
 Bear in mind that the costs and even functionality of service and features might vary between regions. It's always a good idea to consult the most up-to-date official documentation.  
 
 __Virtual Private Cloud (VPCs)__    
-VPCs are AWS network organizers and great tool to organize your infrastructure. You might want to create a new VPC for each ne of your projects or project stages. e.g VPC-Testing, VPC-Staging and VPC-Production.
+VPCs are AWS network organizers and great tool to organize your infrastructure. You might want to create a new VPC for each one of your projects or project stages. e.g VPC-Testing, VPC-Staging and VPC-Production.
 
 __Tenancy__  
 The dedicated Host option allows you to actually identify and control the physical server you've been assigned to meet more restrictive licensing or regulatory requirements.   
@@ -75,7 +75,7 @@ The dedicated Host option allows you to actually identify and control the physic
 __To Login to an EC2 instance using SSH__    
 If you go to the EC2 management console, you click the `Instances` link on the left navigation bar to see your list of instances. Check the box beside the instance you want to connect to and drop down the __Action__ selector, then select _Connect_ and then click on the __SSH client__ tab to find instruction on how to connect.  
 
-The will be instructed to make your key not publicly viewable by running the command.  
+You will be instructed to make your key not publicly viewable by running the command.  
 ```
 $ chmod 400 my-key-file.pem
 ```
@@ -87,10 +87,10 @@ __Instance Pricing__
 It will often make sense to combine multiple models within a single application infrastructure. An online store might, for instance, purchase one or two instances to cover its normal customer demand but also allow autoscaling to automatically launch on-demand instances during periods of unusually high demand.
 
 __Instance Lifecycle__  
-A stopped instance that had been using a nonpersistent public IP address will most likely be assigned a different address when it's restarted. If you need a predictable IP address that can survive restart, allocate an Elastic IP address and associate it with your instance.  
+A stopped instance that had been using a non-persistent public IP address will most likely be assigned a different address when it's restarted. If you need a predictable IP address that can survive restart, allocate an Elastic IP address and associate it with your instance.  
 
 __Resource Tags__  
-The best way to keep track of your resources when they become many is by establishing a consistent naming convention and applying it to tags. For example, the key of the tag may represent the resource's environment and the value will then represent what the resource is. Like this:
+The best way to keep track of your resources when they become many is by establishing a consistent naming convention and applying it to tags. For example, the key of the tag may represent the resource's environment and the value will then represent what the resource is. For example:
 
 | Key               | Value           |
 |-------------------|-----------------|
@@ -106,7 +106,7 @@ You can find up-to-date details regarding the limits of all AWS services at [AWS
 
 __Elastic Block Store Volumes__   
 The AWS SLA guarantees the reliability of the data you store on its EBS volumes with a promise of at least 99.999 percent availability.  
-There are currently four EBS volume types, two using solid-state-drive (SSD) technologies and tow using the older spinning hard drives (HDDs).  Performance is measured in IOPS.   
+There are currently four EBS volume types, two using solid-state-drive (SSD) technologies and two using the older spinning hard drives (HDDs).  Performance is measured in IOPS.   
 
 __EBS-Provisioned IOPS SSD__  
 Provisioned IOPS which in some contexts is referred to as EBS Optimized may provide a maximum IOPS/volume of 32,000 and maximum throughput/volume of 500MB/s. It can cost $0.125/GB/month in addition to $0.065/provisioned IOPS.  
@@ -115,11 +115,11 @@ __EBS General-Purpose SSD__
 A general purpose SSD can get to a maximum of 10,000 IOPS/volume costing $0.10GB/month. A SSD used as a typical 8 GB boot drive for Linux instance would, at current rates, cost you $9.60/year.   
 
 __Throughput-Optimized HDD__    
-For throughput-intensive workloads including log processing and big data operations. These volume can deliver only 500 IPS/volume but with a 500 MB/s maximum throughput/volume at $0.045/GB/month
+For throughput-intensive workloads including log processing and big data operations. These volume can deliver only 500 IOPS/volume but with a 500 MB/s maximum throughput/volume at $0.045/GB/month
 
 
 #### Accessing your EC2 Instance
-You can create and then attach on or more virtual Elastic Network Interfaces to your instance. You can optionally assign a static IP address within the subnet range.  Also an instance can be assigned a public IP through which full Internet access is possible. There is not charge for elastic IPs.  
+You can create and then attach one or more virtual Elastic Network Interfaces to your instance. You can optionally assign a static IP address within the subnet range.  Also an instance can be assigned a public IP through which full Internet access is possible. There is no charge for elastic IPs.  
 
 Run the following command in when logged into an instance  
 ```
@@ -150,7 +150,7 @@ __AWS Systems Manager__
 Use System manager to group and manager your AWS resources.    
 
 __Placement Groups__    
-Use placement groups for multiple EC2 instances to achieve low-latency network connectivity. You can use one of tow strategies:  
+Use placement groups for multiple EC2 instances to achieve low-latency network connectivity. You can use one of two strategies:  
 * _Cluster groups_ which associate instances within a single availability zone in close physical proximity  
 * _Spread groups_ which separate instances across hardware to reduce risk of data lose when failure occurs.  
 
@@ -158,7 +158,7 @@ __AWS Elastic Beanstalk__
 Elastic Beanstalk lets you upload your application code, define a few parameter and AWS will configure, launch and maintain all the infrastructure required to keep it running. The charges are the same as running the individual services involved.   
 
 __Amazon Elastic Container Service and AWS Fargate__  
-Amazon Elastic Container Service (ECS) lets you launch a prebuilt Docket host instance and define the way you want your Docker containers to behave (called a task).  
+Amazon Elastic Container Service (ECS) lets you launch a prebuilt Docker host instance and define the way you want your Docker containers to behave (called a task).  
 The new _Fargate_ tool further abstracts the EC2 configuration process, removing the need for you to run and configure instances for your containers.  
 
 __AWS Lambda__  
@@ -843,7 +843,7 @@ Single sign-on (SSO) allows you to provide users with streamlined authentication
 __AWS Key Management Service__  
 K,S deeply integrates with AWS services to create and manage your encryption keys.  The service lets you create, track, rotate, and delete the keys that you'll use to protect your data. For regulatory compliance purposed, KMS is integrated with AWS CloudTrail, which records all key-related events.  
 
-__AWS Secrets Manager__  
+__AWS Secrets Managehttps://dlslab.com/r__  
 AWS Secrets Manager can be used to manage your third-party API keys.  The manager can automatically take care of credential rotation for you.  
 
 __AWS CloudHSM__
@@ -880,4 +880,96 @@ $ aws iam delete-access-key --user-name john --access-key-id ACCESSKEYID
 #### Review Questions  
 Questions Page[170], Answers Page [364]
 
-## Chapter 7: CloudTrail, CloudWatch, and AWS Config   
+## Chapter 7: CloudTrail, CloudWatch, and AWS Config  
+#### Introduction
+_CloudTrail_, _CloudWatch_, and _AWS Config_ are services that collectively help you keep an eye on your AWS environment by performing the following operational tasks:  
+* Tracking Performance  
+* Detecting Application Problems
+* Detecting Security Problems
+* Logging Events
+* Maintaining an Inventory of AWS Resources  
+
+They can be configured independently and they can also work together to provide a comprehensive monitoring solution for your AWS resources, application and even on-premise servers.  
+* __CloudTrail__ keeps details of logs of every read/write action that occurs against your AWS resources  
+* __CloudWatch__ collects numerical performance metrics from AWS and non-AWS resources such as on-premises servers.  
+* __AWS Config__ tracks how your AWS resources are configures and how they change over time.
+
+#### CloudTrail  
+An event is a record of an action that a principal performs against an AWS resource. _CloudTrail_ logs both API and non-API actions. API events can be performed in the AWS management console, AWS CLI or SDK.  CloudTrail classifies events into _management events_ and _data events_.  
+
+__Management Events__  
+AWS also calls management events _control plane operations_. Management events are further grouped into _write-only_ and _read-only_ events. `RunInstances` API operation is a write-only event, and logging into the management console as the root or IAM user is also a write-only event. `DescribeInstance` is a read-only event.
+
+__Data Events__  
+Data events track two types of _data plane operations_ that tend to be high volume: S3 object-level activity and Lambda function executions. For S3 object-level operations, _CloudTrail_ distinguishes read-only and write-only events. `GetObject` is read-only event, `DeleteObject` and `PutObject` are write-only events.  
+
+__Events History__  
+By default, CloudTrail logs 90 days management events and stores them in a  database called _event history_. The event history does not include data events.  CloudTrail creates a separate event history for each region containing only the activities that occurred in that region. But events for global services such as IAM and Route 53 are included in the event history of every region.
+
+__Tails__  
+A trail is a configuration that records specified events and delivers them as CloudTrail log files to an S3 bucket of your choice. With trail, you can do the following:  
+* Extends the 90 days event history
+* Customize the types of events CloudTrail logs
+* exclude specific services or actions
+* include data events
+
+For global services, the region is always us-east-1.  
+
+__Creating a Trail__
+You can choose to log events from a single region or all regions. You can create up to five trails for a single region.  After creating a trail, it can take up to 15 minutes between the time CloudTrail logs an event and the time it writes a log file to the S3 bucket.
+
+__To Create a Trail__  
+* Go the the CloudTrail Management Console  
+* Click on the `Dashboard` link on the left navigation bar
+* Click the `Create trail` button
+* Enter the Trail name and a Bucket name and click `Next`
+* Select `Management events` under `Event type`
+* Select `Write` under `API activity` and Click `Next`
+* Review your chosen options and click `Create trail`  
+
+If you create a trail using the Web console and log management events, the trail will automatically log global service events also. To avoid duplicates global service event in all your trails you can disable logging global service events on an existing trail using the AWS CLI command  
+```
+$ aws cloudtrail update-trail --name mytrail --no-include-global-service-events
+```
+Alternately, if a trail is configured to log to all regions and you reconfigure it to log only to a single region, CloudTrail will disable global event logging for that trail.
+
+__To create a trail using the CLI__  
+```
+$ aws cloudtrail create-trail --name my-second-trail --s3-bucket-name tochukwu.xyz-mwo-trail-bucket --no-include-global-service-events
+```
+The bucket's bucket policy muse be configured to allow cloud trail to read and write objects to the bucket.  
+Todo: Learn the bucket policy and more bucket policy.
+
+__To Activate the new Trail__  
+```
+$ aws cloudtrail start-logging --name my-second-trail
+```
+__To see all your trails__  
+```
+$ aws cloudtrail describe-trails
+```  
+You are limited to selecting a total of 250 individual object per trail, including Lambda functions and S3 buckets and prefixes.   
+
+__Note__ Don't log data events on the bucket which is storing your CloudTrail logs. Doing so would create an infinite loop.  
+
+__Log File Integrity Validation__   
+CloudTrail provides a means to ensure that no log file were modified or deleted after creation.
+With log file integrity validation enabled, every time CloudTrail delivers a log file to the S3 bucket, it calculates a cryptographic hash of the file which makes it easy to detech when a file has been modified.    
+Every hour, CloudTrail creates a separate file called a `digest file` that contains the cryptographic hashes of all log files delivered within the last hour and signs the _digest file_ using a private key that varies by region and places the signature in the file's S3 object metadata.  
+
+__To validate all log file__  
+```
+$ aws cloudtrail validate-logs --trail-arn arn:aws:cloudtrail:eu-west-2:123456789012:trail/my-second-trail --start-time 2021-04-19T00:00:00Z
+```
+
+#### CloudWatch  
+CloudWatch functions a s a metric repository that lets you collect, retrieve, and graph numeric performance metrics from AWS and non-AWS resources. All AWS resources automatically send their metrics to CloudWatch. Optionally you can send custom metrics to CloudWatch from your applcations and on-premise servers.
+
+__CloudWatch Metrics__  
+CloudWatch organizes metrics into _namespaces_. Metrics from AWS services are stored in AWS namespaces and use the format AWS/service to allow for easy classification of metrics. For example, AWS/EC2 or AWS/S3.  You can create custom namespaces for custom metrics. Metrics exists only in the region which they were created.    
+A metric functions as a variable and contains a time-ordered set of _data points_. Each data point contains a timestamp, a value, and optionally a unit of measure.  Each metric is uniquely defined by a namespace, a name, and optionally a _dimension_. A dimension is a name-value pair.
+
+__Basic and Detailed Monitoring__  
+Most services support basic monitoring and some support _basic monitoring_ and _detailed monitoring_.  Basic monitoring send metrics to CloudWatch every five minutes. Detailed monitoring publishes metric to CloudWatch every minute.
+
+__Regular and High-Resolution Metrics__  

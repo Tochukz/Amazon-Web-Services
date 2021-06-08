@@ -151,9 +151,37 @@ $ aws ec2 terminate-instances --instance-id i-xxxxxxxx
 
 See [AWS CLI EC2](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html) for reference.
 
+__Creating a network interface__  
+To create the ENI with private IP addresses
+```
+$ aws ec2 create-network-interface --subnet-id subnet-aed11acb --groups sg-ad70b8c8 --private-ip-addresses PrivateIpAddress=10.0.0.26,Primary=true PrivateIpAddress=10.0.0.27,Primary=false
+```
 
 __Allocating Elastic IP address__  
-If you stop the instance in EC2-Classic the EIP is disassociated from the instance, and you have to associate it again when you start the instance. Fr EC2-VPC the EIP remains associated with the EC2 instance.  
+If you stop the instance in EC2-Classic the EIP is disassociated from the instance, and you have to associate it again when you start the instance. For EC2-VPC the EIP remains associated with the EC2 instance.  
+Create an Elastic IP address for VPC
+```
+$ aws ec2 allocate-address --domain vpc
+```
+associate the EIP to the Elastic Network Interface (ENI)  
+```
+$ aws ec2 associate-address --network-interface-id eni-d68df2b3 --allocation-id eipalloc-82e0ffe0
+```
+The network-interface-id parameter must be obtained from the output of the `create-network-interface` command above.  
+The allocation-id parameter must be obtained from the output of that `allocate-address` command above.    
+
+
+__Attaching the network interface to an instance__  
+To attach the ENI to an EC2 instance
+```
+$ aws ec2 attach-network-interface --network-interface-id eni-5c88f739 --instance-id i-2e7dace3 --device-index 1
+```
+
+__Associate the EIP to the ENI__   
+To associate the EIP to the ENI
+```
+$ aws ec2 associate-address --network-interface-id eni-5c88f739 --allocation-id eipalloc-d59f80b7 --private-ip-address 10.0.0.26
+```
 
 __Windows Instance__   
 [How to connect you instance](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/connecting_to_windows_instance.html?icmpid=docs_ec2_console)
