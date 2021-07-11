@@ -120,6 +120,20 @@ Make sure the `A record`'s `name` is the same as the domain entry in your `/etc/
 
 See more at [How to PHP](https://linuxize.com/post/how-to-install-php-on-ubuntu-20-04/)  
 
+__Install PHP Extensions__  
+Installing `curl`, `bcmath` and `mysql` PHP extensions
+```
+$ sudo apt-get install php7.4-curl
+$ sudo apt-get install php7.4-bcmath
+$ sudo apt-get install php7.4-mysql
+```
+Restart PHP fpm
+```
+$  sudo service php7.4-fpm restart
+```
+
+You may also need to uncomment some extension in the `php.ini` file to enable them
+
 #### Setup MySQL
 Install MySQL  
 ```

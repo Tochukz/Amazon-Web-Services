@@ -133,6 +133,153 @@ If the CGW supports Border Gateway Protocol (BGP), then configure the VPN connec
 Amazon VPC also supports multiple CGWs, each having a VPN connection to a single VPG (many-to-one design). In order to support this topology, the CGW IP address must be unique within the region.  
 The VPN connection consists of two Internet Protocol Security (IPSec) tunnels for higher availability to the Amazon VPC.  
 
+__Create an IPV4 VPC and Subnet__  
+1. Create a VPC
+```
+$ aws ec2 create-vpc --cidr-block 10.0.0.0/16
+```
+2. Create a two subnets in the VPC using the VPC ID from the output of the previous step.
+```
+$ aws ec2 create-subnet --vpc-id vpc-your-id --cidr-block 10.0.0.0/24
+$ aws ec2 create-subnet --vpc-id vpc-your-id --cidr-block 10.0.1.0/24
+```
+
+__Making your subnet Public__  
+To make your subnet publicly accessible over the internet
+1. Create an internet gateway for your VPC
+```
+$ aws ec2 create-internet-gateway
+```
+2. Attach the internet gateway to your VPC using the Internet Gateway ID from the output of the previous step.
+```
+$ aws ec2 attach-internet-gateway --vpc-id vpc-your-id --internet-gateway-id igw-your-id
+```
+3. Create a custom route table for you VPC
+```
+$ aws ec2 create-route-table --vpc-id vpc-your-id
+```
+4. Create a route in the route table that points all traffic (0.0.0.0/0) to the internet gateway using the Route Table ID from  the previous step
+```
+$ aws ec2 create-route --route-table-id rtb-your-id --destination-cidr 0.0.0.0/0 --gateway-id igw-your-id
+```
+5. To show that your route was created successfully and is active, describe the route table
+```
+$ aws ec2 describe-route-tables --route-table-id rtb-your-id
+```
+6. Associate your route table with a subnet in your VPC so that traffic from that subnet is routed to the internet gateway.  
+First, get the subnet ID using the  `describe-subnets` command
+```
+$ aws ec2 describe-subnets --filter "Name=vpc-id,Values=vpc-0e37feb3057ab7ee3" --query "Subnets[*].{ID:SubnetId,CIDR:CidrBlock}"
+```
+Take the subnet ID of your choosen subnet and associated it to the custom route table
+```
+$ aws ec2 associate-route-table --subnet-id subnet-your-id --route-table-id rtb-your-id
+```
+7. Optionally, configure the subnet so that an instance laucnhed into the subnet automatically receives a public IP address  
+```
+$ aws ec2 modify-subnet-attribute --subnet-id subnet-your-id --map-public-ip-on-launch
+```
+Alternately, you can associate an Elastic IP address with your instance after lauch so that it is reachable from the internet.
+
+__Launch an EC2 Instance into your public subnet__  
+1. Create a key pair
+```
+$ aws ec2 create-key-pair --key-name my-key-name --query "KeyMaterial" --output text > my-key-name.pem
+```
+2. Change the permission of your private key file
+```
+$ chmod 400 my-key-name.pem
+```
+3. Create a security group in your VPC  
+```
+$ aws ec2 create-security-group --group-name linux-sg --description "Security Group for My Linux Instances" --vpc-id vpc-your-id
+```
+4. Add a rule to your security group to allow SSH access and Broswer access
+```
+$ aws ec2 authorize-security-group-ingress --group-id sg-your-id --protocol tcp --port 22 --cidr 0.0.0.0/0
+$ aws ec2 authorize-security-group-ingress --group-id sg-your-id --protocol tcp --port 80 --cidr 0.0.0.0/0
+```
+5. Lauch an EC2 instance in your public subnet using the security group and key pair  
+```
+$ aws ec2 run-instances --image-id ami-0194c3e07668a7e36 --count 1 --instance-type t2.micro --key-name my-key-name --security-group-ids sg-your-id --subnet-id subnet-your-id
+
+```
+6. Describe your instance to see that it is running using the instance id from the output of the previous step
+```
+$ aws ec2 descibe-instances --instance-d i-your-instance-id
+```
+7. Connect to your instance using an SSH client
+```
+$ ssh -i my-ke-name.pem ubuntu@XX.XX.XXX.XXX
+```
+Where XX.XX.XXX.XXX is your ec2 public IP address
+
+
+__Cleaning up your every thing__   
+To delete your security group  
+```
+$ aws ec2 delete-security-group --group-id sg-your-id
+```  
+To delete your subnet
+```
+$ aws ec2 delete-subnet --subnet-id subnet-your-id
+```
+To delete your custom route table
+```
+$ aws ec2 delete-route-table --route-table-id rtb-your-id
+```  
+To detach your internet gatewy from your VPC
+```
+$ aws ec2 detach-internet-gateway --internet-gateway-id igw-your-id --vpc-id vpc-your-id
+```
+To deete your internet gateway
+```
+$ aws ec2 delete-internet-gateway --internet-gateway-id igw-your-id
+```
+To delete your VCP
+```
+aws ec2 delete-vpc --vpc-id vpc-your-id
+```
+[VPC, Subnet, EC2 ](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-subnets-commands-example.html)
+
+__Add Your Own Key to EC2 Instance__  
+If you lost your private key or experience a invalid format error with your key you can add your own SSH key  
+1. First generate your key pair if you don't already have it
+2. Open AWS EC2 Console
+3. Stop your instance
+4. Click on _Action_ > _Instance Settings_  > _Edit user data_
+5. Copy the following script into the _Edit user data_ dialog box
+```
+Content-Type: multipart/mixed; boundary="//"
+MIME-Version: 1.0
+
+--//
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="cloud-config.txt"
+
+#cloud-config
+cloud_final_modules:
+- [users-groups, once]
+users:
+  - name: username
+    ssh-authorized-keys:
+    - PublicKeypair
+```
+Make sure to replace the __PublicKeyPair__ text with the content of your public key file (`.ssh/id_rsa.pub`).
+6. Click on _Save_ and start you instance again
+7. Try to SSH again into you instance to verify that it works
+```
+$ ssh ubuntu@xx.xxx.xxx.xxx
+```
+8. Stop you instance and
+9. Go back to _Action_ > _Instance Settings_ > _Edit user data_
+10. Delete al the text in the _Edit user data_ dialog box and click _Save_
+11. Start your instance again
+12. Connect to your instance again via SSH and confirm that it still works
+
+[User Key Replacement](https://aws.amazon.com/premiumsupport/knowledge-center/user-data-replace-key-pair-ec2/)
 __Exam Essential__
 Page [154]  
 

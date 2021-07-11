@@ -32,7 +32,12 @@ A credential file looks like this
 aws_access_key_id = <YOUR_ACCESS_KEY_ID>
 aws_secret_access_key = <YOUR_SECRET_ACCESS_KEY>
 ```
-To generate credential follow this [article](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
+To generate credential via the CLI, do
+```
+> aws configure
+```  
+Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_. 
+[Learn more](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
 
 To learn about AWS CLI commands see [AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)
 ## Chapter 2: Hosting a Static Website on Amazon S3 Bucket  

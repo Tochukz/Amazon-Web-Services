@@ -47,10 +47,14 @@ To verify that the private key matches the public key stored in AWS, you can dis
 ```
 $ aws ec2 describe-key-pairs --key-name MyKeyPair
 ```  
+To list all your key pairs
+```
+$  aws ec2 describe-key-pairs
+```
 To delete you keypair in the future  
 ```
 $ aws ec2 delete-key-pair --key-name MyKeyPair
-```
+```  
 2. Create a security group  
 A security group operates as a firewall with rules that determine what network traffic to allow. The security group can be used in a VPC or EC2-Classic shared flat network.   
 To create a security group for a specific VPC  
@@ -74,7 +78,7 @@ To delete a security group
 ```
 $ aws ec2 delete-security-group --group-id sg-xxxxxxxxxxx
 ```
-3. Add rules to you security group  
+3. Add rules to your security group  
 To add a rule to the security group for EC2-VPC, use the `group-id` of the security group.
 For windows instance, add a rule to allow inbound traffic on TCP 3389 to support Remote Desktop Protocol.  
 ```
@@ -148,6 +152,23 @@ You can override the default region set in you config file by using the region f
 ```
 $ aws ec2 terminate-instances --instance-id i-xxxxxxxx
 ```
+10. To add or replace key pair for already existing instances
+Generate a private key
+```
+$ aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > my-key-pair.pem
+```
+Retrieve the public key from the private key
+```
+$ ssh-keygen -y -f /path_to_key_pair/my-key-pair.pem
+```
+If you get an error you can generate a new private key using the management console (EC2 -> Key Pairs) and then try this command again.    
+
+11. Use existing key pair  
+If you already have a key pair configured on your machine you can add the import the public key to your instance  
+```
+$ aws ec2 import-key-pair --key-name chucks-key --public-key-material fileb://.ssh\id_rsa.pub
+```
+
 
 See [AWS CLI EC2](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html) for reference.
 

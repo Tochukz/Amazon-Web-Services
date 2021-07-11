@@ -516,7 +516,7 @@ __Tip__
 You can use native tools and techniques to migrate your database to Amazon RDS. For example, you can use `mysqldump` to export you MySQL database and import the file into RDS MySQL. You can also use `AWS Database Migration Service`, which has a GUI, for migration of schema and data, it also help convert database from one database engine to another.    
 
 __Operational Benefits__  
-In Amazon RDS, you cannot use Secure Shell (SSH) to log into the host instance and install a custom piece of software. You can, however, connect using SQL administrator tools or use _DB option groups_ and _DB parameter groups_ to change the behavior or feature configuration for a DB Instance. If you want fill control of the Operating System or require elevated permissions to run, then consider installing your database on Amazon EC2 instead of Amaon RDS.  
+In Amazon RDS, you cannot use Secure Shell (SSH) to log into the host instance and install a custom piece of software. You can, however, connect using SQL administrator tools or use _DB option groups_ and _DB parameter groups_ to change the behavior or feature configuration for a DB Instance. If you want full control of the Operating System or require elevated permissions to run, then consider installing your database on Amazon EC2 instead of Amazon RDS.  
 
 #### Database Engines  
 __MySQL__  
