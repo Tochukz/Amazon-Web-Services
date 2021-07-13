@@ -8,7 +8,7 @@ Install Nginx
 ```
 $ sudo apt-get install nginx
 ```
-See [How to Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-16-04) for  more.   
+See [How to Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04) for  details.   
 
 #### Setup a virtual host for a single website on Nginx
 Create a directory for the site
@@ -180,3 +180,41 @@ For example
 ```
 $ scp -r -i aws-linux2.pem d:/tochukwu/tables/ ubuntu@xx.xxx.xx.xxx:~/data/
 ```
+
+###  Secure Nginx using Let's Ecrypt
+First install Let's Ecrypt's Certbot and it's Nginx plugin
+```
+$ sudo apt install certbot python3-certbox-nginx
+```
+Make sure that the server block of your Nginx configuration file for the site have the `server_name` directive properly setup
+```
+...
+server_name example.com www.example.com;
+...
+```  
+If not, edit the config file, save and test for syntax correctness
+```
+$ sudo nginx -t
+```
+If you have firewall enabled, check your firewall status and allow Nginx Full profile which allows HTTP and HTTPS traffic
+```
+$ sudo ufw status
+$ sudo ufw allow 'Nginx Full'
+```  
+You may  also delete the redundant `Nginx HTTP` only profile
+```
+$ sudo ufw delete allow 'Nginx HTTP'
+```
+Obtain an SSL Certificat using the certbot and nginx plugin
+```
+$ sudo certbot --nginx -d example.com -d www.example.com
+```
+Verify that certbot's auto-renewal systemd timer has been activated
+```
+$ sudo systemctl status certbot.timer
+```
+You can test the renewal process by doing a dry run
+```
+$ sudo certbot renew --dry-run
+```
+For detail see [Digital Ocean: How to Secure Nginx with Let's Encrypt in Ubuntu 20/04](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04)
