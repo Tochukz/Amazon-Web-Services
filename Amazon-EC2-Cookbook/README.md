@@ -159,7 +159,7 @@ $ aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output te
 ```
 Retrieve the public key from the private key
 ```
-$ ssh-keygen -y -f /path_to_key_pair/my-key-pair.pem
+$ ssh-keygen -y -f /path_to_aws key_pair/my-key-pair.pem
 ```
 If you get an error you can generate a new private key using the management console (EC2 -> Key Pairs) and then try this command again.    
 

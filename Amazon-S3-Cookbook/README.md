@@ -36,7 +36,7 @@ To generate credential via the CLI, do
 ```
 > aws configure
 ```  
-Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_. 
+Follow the prompt and enter your AWS _access key ID_, _secret access key_ and _default region_.
 [Learn more](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html)    
 
 To learn about AWS CLI commands see [AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)
@@ -119,7 +119,7 @@ __How to configure S3 server access logging__
 Note that storing log objects and accessing log objects are charged in the same way as S3 storage and data transfer pricing.  
 If you want to regularly delete log objects you can manage the life cycle of objects by using life cycle rules.  
 
-__How to configure a static website suing a custom domain__  
+__How to configure a static website using a custom domain__  
 To configure a website with your domain you need to
 1. Create an S3 buckets, namely `<your_domain>` or `<your_subdomain>.<your_domain>` e.g `blog.tochukwu.xyz`.
 2. Configure the bucket for static website hosting and upload your files as describe earlier above.
