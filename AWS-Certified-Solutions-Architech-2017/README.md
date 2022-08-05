@@ -194,13 +194,17 @@ There are four sources of AMIs:
 3. __Generating from Existing Instances__ - Am AMI can be created from an existing Amazon EC2 instance. A launched instance is first configured to meet all the customer's corporate standards and then an AMI is generated from the configured instances and used to lunch new instances of that OS.  
 4. __Uploading Virtual Servers__ - Using AWS VM Import/Export service, customers can create images from various virtualization formats, including raw, VHD, VMDK, and OVA.  Make sure you are compliant with the licensing terms of your OS vendor.   
 
-__Addressing an Instance__
+__Addressing an Instance__  
 There are several ways that an instance may be addressed over the web upon creation:  
 * __Public Domain Name System (DNS) Name__ - This DNS name cannot be specified and persists only while the instance is running and cannot be transferred to another instance.  
 * __Public IP__ - This address persists only while the instance is running and cannot be transferred to another instance.   
 * __Elastic IP__ - This address is a public address that can be reserved and associated with an Amazon EC2 instance. This IP address persists until the customer releases it and can be transferred to a replacement or another instance.   
 
 In the context of an Amazon VPC, we also have __Private IP addresses__ and __Elastic Network Interfaces__ (ENIs).  
+
+__Initial Access__   
+When Amazon EC2 launches a Linux instance, the public key is store in the `~/.ssh/authorized_keys` file on the instance and an initial user is created.   
+When launching a Windows instance, Amazon EC2 generated a random password for the local administrator account and encrypts the password using the public key.  Initial access to the instance is obtained by decrypting the password with the private key, either in the console or through the API.  The decrypted password can be used to log into the instance with the local administrator account via RDP.  
 
 __Virtual Firewall Protection page__  
 Security groups are applied at the instance level, as opposed to a traditional on-premises firewall that protects at the perimeter.  
@@ -230,7 +234,7 @@ To change the _Instance Type_
 * Select the desired instance type
 * Restart the instance
 
-You can change the _Security Groups_ associated with an instance while the instance is running. For `EC2-Classic`, you cannot change the security group after launch.
+For instances running on Amazon VPC, you can change the _Security Groups_ associated with an instance while the instance is running. For instances in `EC2-Classic`, you cannot change the security group after launch.
 
 __Termination Protection__  
 In order to prevent termination via the AWS Management Console, CLI, or API, _termination protection_ can be enabled for an instance. While enabled, calls to terminate the instance will fail until termination protected is disabled.  
@@ -302,7 +306,7 @@ Characteristic     | Magnetic                | General-Purpose SSD | Provisioned
 -------------------|-------------------------|---------------------|----------------------|
 Volume size        | 1 GiB - 1 TiB           | 1 GiB - 16 TiB      | 4 GiB - 16 TiB       |
 Maximum throughput | 40-90MB                 | 160MB               | 320MB                |
-IOPS performance   | Avg. 100 IOPS burstable | baseline 3 IOPS/GiB up to 10,000 IOPS | provision level up to 20,000 IOPS max. |
+IOPS performance   | Avg. 100 IOPS burstable t0 100s of IOPS | baseline 3 IOPS/GiB up to 10,000 IOPS capline, bustable to 3,000 IOPS| provision level up to 20,000 IOPS max. |
 
 ##### Other EBS Volume (HDD)
 Overtime it is expected that _Throughput-Optimized HDD_ and _Cold HDD_ will replace the current magnetic volume type.
