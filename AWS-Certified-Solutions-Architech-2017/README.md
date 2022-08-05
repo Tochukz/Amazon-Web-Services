@@ -93,18 +93,19 @@ __Application Services__
 
 
 ## Chapter 2: Amazon Simple Storage Service (Amazon S3) and Glacier Storage  
-__Introduction__
+__Introduction__  
 Nearly any application running in AWS uses _Amazon S3_, either directly or indirectly.  
 _Amazon S3_ offers a range of storage classed designed for various generic use cases: general purpose, infrequent access, and archive.
 To help manage data through its lifecycle, Amazon S3 offers configurable lifecycle policies. By using lifecycle policies, you can have your data automatically migrated to the most appropriate storage class, without modifying your application code.  
 
-_Amazon Glacier_ can be used bot as a storage class of AmazonS3 and as an independent archival storage service.  
+_Amazon Glacier_ can be used both as a storage class of AmazonS3 and as an independent archival storage service.  
 
 __Object Storage versus Traditional Block and File Storage__  
 In Amazon S3, you _GET_ an object or _PUT_ an object, operating on the whole object at once, instead of incrementally updating portions of the object as you would with a file.
 Amazon S3 objects are automatically replicated on multiple devices in multiple facilities within a region
+__Tip__ If you need traditional block or file storage in addition to Amazon S3 storage, AWS provides options. The Amazon EBS service provides block level storage for Amazon Elastic Compute Cloud (Amazon EC2) instances. Amazon Elastic File System (AWS EFS) provides network-attached shared file storage (NAS storage) using the NFS v4 protocol.  
 
-__Objects__
+__Objects__  
 User metadata for an object is optional, and it can only be specified at the time the object is created.  
 
 __Durability and Availability__  
@@ -181,6 +182,9 @@ __Sample Instance Type Families__
 
 See [AWS Instance types](https://aws.amazon.com/ec2/instance-types/) to for the current list.  
 Enabling enhanced networking on an instance involves ensuring the correct drivers are installed and modifying an instance attribute.  Enhances networking is available only for instances launched in an Amazon Virtual Private cloud (Amazon VPC).  
+
+For workloads requiring greater network performance, many instance types support enhanced networking. Enhanced networking reduces the impact of virtualization on network performance by enabling a capability called Single Root I/O Virtualization (SR-IOV).
+Enhanced networking is available only for instances launched in an Amazon Virtual Private Cloud (Amazon VPC).  
 
 __Amazon Machine Images (AMIs)__   
 The _Amazon Machine Image (AMI)_ defines the initial software that will be on an instance when it is launched.  Am AMU defined every aspect of the software state at instance launch.  
