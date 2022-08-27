@@ -81,7 +81,7 @@ _Service layers_ allow you to add other AWS services as layers in your OpsWorks 
 * RDS
 * ?
 
-For instance specs you can cross-refernce this list here [https://aws.amazon.com/ec2/instance-types/#Instance_Types](https://aws.amazon.com/ec2/instance-types/#Instance_Types).
+For instance specs you can cross-refernce this list here [https://aws.amazon.com/ec2/instance-types/#Instance_Types](https://aws.amazon.com/ec2/instance-types/#Instance_Types).  
 __Instances__  
 An instance represents a server. It belongs to one or more layers that define the instance's settings, resources, installed packages profiles and security group. When you start an instance OpsWorks uses the associated layer's blueprint to create and configure a corresponding EC2 instance.
 
