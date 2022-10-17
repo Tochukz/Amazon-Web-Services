@@ -175,11 +175,24 @@ Take the subnet ID of your choosen subnet and associated it to the custom route 
 ```
 $ aws ec2 associate-route-table --subnet-id subnet-your-id --route-table-id rtb-your-id
 ```
-7. Optionally, configure the subnet so that an instance laucnhed into the subnet automatically receives a public IP address  
+7. Optionally, configure the subnet so that an instance launched into the subnet automatically receives a public IP address  
 ```
 $ aws ec2 modify-subnet-attribute --subnet-id subnet-your-id --map-public-ip-on-launch
 ```
-Alternately, you can associate an Elastic IP address with your instance after lauch so that it is reachable from the internet.
+Alternately, you can associate an Elastic IP address with your instance after launch so that it is reachable from the internet.
+8. If you choose to use Elastic IP, allocate an elastic IP for an instance in a VPC.
+```
+$ aws ec2 allocate-address --domain vpc
+```
+To see your Elastic IP address again do
+```
+$ aws ec2 describe-addresses
+```
+9. Associate the Elastic IP address to your instance using the AllocationId from the previous step.
+__Warning__: This is an idempotent operation. If you perform the operation more than once, Amazon EC2 doesn't return an error, and you may be charged for each time the Elastic IP address is remapped to the same instance.
+```
+$ aws ec2 associate-address --allocation-id eipalloc-your-id --instance-id i-your-instance-id
+```
 
 __Launch an EC2 Instance into your public subnet__  
 1. Create a key pair
@@ -279,7 +292,33 @@ $ ssh ubuntu@xx.xxx.xxx.xxx
 11. Start your instance again
 12. Connect to your instance again via SSH and confirm that it still works
 
-[User Key Replacement](https://aws.amazon.com/premiumsupport/knowledge-center/user-data-replace-key-pair-ec2/)
+[User Key Replacement](https://aws.amazon.com/premiumsupport/knowledge-center/user-data-replace-key-pair-ec2/)  
+
+__Store you EC2 Key in AWS Secrets Manager__  
+1. Encode the key file content with Base64 encoding and store it in Secrets Manager  
+```
+$ keyBase64=$(base64 ~/AmazonLinux.pem)
+$ aws secretsmanager create-secret --name AmazonLinux --description "AmazonLinux private key" --secret-string $keyBase64
+```  
+2. Later you can get the private key back from Secrets manager and decode it Base64 text
+```
+$ aws secretsmanager get-secret-value --secret-id AmazonLinux --query SecretString --output text | base64 --decode > AmazonLinux.pem
+```
+Note that you secret-id is the secret name.
+3. If you forget your secret name you can list all you secrets to see their names.
+```
+$  aws secretsmanager list-secrets
+```
+4. After you got your secret key, make the key file readonly so that you can use it for SSH
+```
+$ chmod 400 AmazonLinux.pem
+```
+5. To delete a AWS secrets
+```
+$ aws secretsmanager delete-secret --secret-id AmazonLinux
+```  
+[Storing Encryption Keys in AWS Secrets Manager](https://medium.com/swlh/storing-encryption-keys-in-aws-secrets-manager-8b2be87a891e)
+
 __Exam Essential__
 Page [154]  
 
