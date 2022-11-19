@@ -212,14 +212,14 @@ $ aws ec2 create-security-group --group-name linux-sg --description "Security Gr
 $ aws ec2 authorize-security-group-ingress --group-id sg-your-id --protocol tcp --port 22 --cidr 0.0.0.0/0
 $ aws ec2 authorize-security-group-ingress --group-id sg-your-id --protocol tcp --port 80 --cidr 0.0.0.0/0
 ```
-5. Lauch an EC2 instance in your public subnet using the security group and key pair  
+5. Launch an EC2 instance in your public subnet using the security group and key pair  
 ```
 $ aws ec2 run-instances --image-id ami-0194c3e07668a7e36 --count 1 --instance-type t2.micro --key-name my-key-name --security-group-ids sg-your-id --subnet-id subnet-your-id
 
 ```
 6. Describe your instance to see that it is running using the instance id from the output of the previous step
 ```
-$ aws ec2 descibe-instances --instance-d i-your-instance-id
+$ aws ec2 describe-instances --instance-d i-your-instance-id
 ```
 7. Connect to your instance using an SSH client
 ```
