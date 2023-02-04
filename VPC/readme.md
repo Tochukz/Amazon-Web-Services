@@ -241,7 +241,7 @@ To delete your custom route table
 ```
 $ aws ec2 delete-route-table --route-table-id rtb-your-id
 ```  
-To detach your internet gatewy from your VPC
+To detach your internet gateway from your VPC
 ```
 $ aws ec2 detach-internet-gateway --internet-gateway-id igw-your-id --vpc-id vpc-your-id
 ```
@@ -293,31 +293,6 @@ $ ssh ubuntu@xx.xxx.xxx.xxx
 12. Connect to your instance again via SSH and confirm that it still works
 
 [User Key Replacement](https://aws.amazon.com/premiumsupport/knowledge-center/user-data-replace-key-pair-ec2/)  
-
-__Store you EC2 Key in AWS Secrets Manager__  
-1. Encode the key file content with Base64 encoding and store it in Secrets Manager  
-```
-$ keyBase64=$(base64 ~/AmazonLinux.pem)
-$ aws secretsmanager create-secret --name AmazonLinux --description "AmazonLinux private key" --secret-string $keyBase64
-```  
-2. Later you can get the private key back from Secrets manager and decode it Base64 text
-```
-$ aws secretsmanager get-secret-value --secret-id AmazonLinux --query SecretString --output text | base64 --decode > AmazonLinux.pem
-```
-Note that you secret-id is the secret name.
-3. If you forget your secret name you can list all you secrets to see their names.
-```
-$  aws secretsmanager list-secrets
-```
-4. After you got your secret key, make the key file readonly so that you can use it for SSH
-```
-$ chmod 400 AmazonLinux.pem
-```
-5. To delete a AWS secrets
-```
-$ aws secretsmanager delete-secret --secret-id AmazonLinux
-```  
-[Storing Encryption Keys in AWS Secrets Manager](https://medium.com/swlh/storing-encryption-keys-in-aws-secrets-manager-8b2be87a891e)
 
 __Exam Essential__
 Page [154]  

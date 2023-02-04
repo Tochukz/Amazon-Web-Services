@@ -7,5 +7,5 @@ __Useful links__
 [AWS Practice](https://github.com/Tochukz/AWS-Practice)   
 [Amazon EC2 Cookbook](https://github.com/Tochukz/Amazon-EC2-Cookbook)  
 [Amazon S3 Cookbook](https://github.com/Tochukz/Amazon-S3-Cookbook)  
-[Amazon ECS](https://github.com/Tochukz/Amazon-ECS) 
+[Amazon ECS](https://github.com/Tochukz/Amazon-ECS)   
 [Amazon CDK](https://github.com/Tochukz/Amazon-CDK)

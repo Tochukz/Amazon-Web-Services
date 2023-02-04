@@ -1,9 +1,10 @@
 ## Chapter 5: Elastic Load Balancing, Amazon CloudWatch, and Auto Scaling  
-#### Introduction
+### Introduction
 _Elastic Load Balancing_ distributes traffic across multiple EC2 instances and includes options that provide flexibility and control of incoming requests to Amazon EC2 instances.  
 _Amazon CloudWatch_ monitors AWS cloud resources and applications. It collects and tracks metrics, collects and monitors log files, and sets alarms. The basic level of monitoring has no cost but a more detailed level of monitoring has an additional cost.  
 _Auto Scaling_ allows you to maintain the availability of your applications by scaling Amazon EC2 capacity up or down in accordance with conditions you set.   
 
+### Elastic Load Balancing
 #### Features of Elastic Load Balancing
 Elastic Load Balancing supports the following load balancers:
 * Application Load Balancers
@@ -54,7 +55,7 @@ __Health check__
  You can set the time interval between health checks and also the amount of time to wait to respond in case the health check page includes a computational aspect.  
  The status of the instances that are healthy at the time of the health check is _InService_. The status of any instances that are unhealthy at the time of the health check is _OutOfService_.  
 
-#### Amazon CloudWatch  
+### Amazon CloudWatch  
 With Amazon CloudWatch, you can collect and track metrics, create alarms that send notifications, and make changes to the resources being monitored based on rules you define.
 You might choose to monitor CPU utilization to decide when to add or remove Amazon EC2 instances in an application tier.   
 You can specify parameters for a metric over a time period and configure alarms and automated actions when a threshold is reached. Amazon CloudWatch supports multiple types of actions such as sending a notification to an Amazon Simple Notification Service (Amazon SNS) topic or executing an Auto Scaling policy.  
@@ -65,7 +66,7 @@ Amazon CloudWatch Logs can be used to monitor, store, and access log files from 
 __Amazon Cloudwatch limitation__  
 Amazon CloudWatch has some limits that you should keep in mind when using the service. Each AWS account is limited to 5,000 alarms per AWS account, and metrics data is retained for two weeks by default (at the time of this writing).  
 
-#### Auto Scaling  
+### Auto Scaling  
 With Auto Scaling, you can ensure that the number of running Amazon EC2 instances increases during demand spikes or peak demand periods to maintain application performance and decreases automatically during demand lulls or troughs to minimize costs.  
 
 #### Auto Scaling Plans  
@@ -88,11 +89,7 @@ Dynamic scaling lets you define parameters that control the Auto Scaling process
 #### Auto Scaling Components  
 
 
-
-
-
-
-[User Guide - Elastic Load Balancing](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html)
+[User Guide - Elastic Load Balancing](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html)  
 [User Guide - Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
 
 
