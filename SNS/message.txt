@@ -1,0 +1,3 @@
+Simple Notification Service
+Hello AWS SMS
+I am here to grow!
