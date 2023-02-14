@@ -1,0 +1,15 @@
+{
+    "ItemName": {
+      "DataType": "String",
+      "StringValue": "Laptop"
+    },
+    "Description": {
+      "DataType": "Binary",
+      "BinaryValue": "Very powerful HP laptop"
+    },
+    "Price": {
+      "DataType": "Number",
+      "StringValue": "8900"
+    }
+  }
+  

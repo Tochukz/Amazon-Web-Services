@@ -1,0 +1,4 @@
+{
+    "FifoQueue": "true",
+    "MessageRetentionPeriod": "259200"
+}

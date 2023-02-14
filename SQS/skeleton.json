@@ -1,0 +1,9 @@
+{
+    "QueueName": "",
+    "Attributes": {
+        "FifoQueue": true
+    },
+    "tags": {
+        "KeyName": ""
+    }
+}
