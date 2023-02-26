@@ -1,9 +1,11 @@
 # Amazon Web Services
+[AWS Docs](https://docs.aws.amazon.com/)
 This reflects a journey of learning and working with AWS.  
 
 __Resources__  
-[AWS JavaScript SDK](https://aws.amazon.com/sdk-for-javascript/)  
+[AWS JavaScript SDK](https://aws.amazon.com/sdk-for-javascript/)   
 [JavaScript SDK Developer Guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/welcome.html)  
+[AWS JavaScript SDK API Reference Guide](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/index.html)   
 
 __Useful links__   
 [AWS Certified Solutions Architech-2017](https://github.com/Tochukz/Amazon-Web-Services/tree/master/AWS-Certified-Solutions-Architech-2017)  
