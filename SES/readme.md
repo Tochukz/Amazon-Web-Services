@@ -102,4 +102,9 @@ __Create SMTP credential__
 5. Click _Close_ button.   
 
 [SMTP Service endpoints](https://docs.aws.amazon.com/general/latest/gr/ses.html)  
-### send email using the API
+
+### Send email using the API
+You can call the API in the following ways:
+1. Make direct HTTPS requests
+2. Use an AWS SDK
+3. Use a command line interface

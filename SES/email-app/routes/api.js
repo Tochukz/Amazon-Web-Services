@@ -3,6 +3,7 @@ const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const router = express.Router();
 const { makeTemplate } = require('../helpers/email-helper');
 
+/** Send email via SES API */
 router.post('/send-mail', async function(req, res, next) {
   try {
     const message = req.body.message;
@@ -17,12 +18,12 @@ router.post('/send-mail', async function(req, res, next) {
       },
       Message: {
         Subject: {
-          Data: 'Test Email For SES'
+          Data: 'Test Email For SES API'
         },
         Body: {
-          // Text: {
-          //   Data: ''
-          // },
+          Text: {
+            Data: message,
+          },
           Html: {
             Data: makeTemplate(message),
           }
@@ -32,7 +33,7 @@ router.post('/send-mail', async function(req, res, next) {
     };
     const command = new SendEmailCommand(input);
     const response = await client.send(command);
-    return res.json(response);
+    return res.status(201).json(response);
   } catch(error) {
     console.log('error', error);
     return next(error);
