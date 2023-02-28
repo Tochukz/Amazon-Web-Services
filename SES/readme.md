@@ -15,10 +15,11 @@ In most cases, creating a domain identity eliminates the need for creating and v
 To send email from the same domain or email address in more than one AWS Region, you must create and verify a separate identity for each Region.   
 Domain names are case-insensitive. Email addresses are case sensitive.  
 
-__Creating a domain identity__    
-1. __Verify domain identity__
+#### Creating a domain identity__    
+1. __Verify domain identity__  
 
-You can verify you domain using the _VerifyDomainDkim_ operation.
+__Method 1:__ Using the _VerifyDomainDkim_ operation.  
+You can verify you domain by executing the `ses verify-domain-dkim` command:  
 ```bash
 $ aws ses verify-domain-dkim --domain k-medics.site
 ```  
@@ -31,13 +32,14 @@ Host  |[token]._domainkey.[example.com]
 Type  | CNAME
 Value | [token].dkim.amazonses.com
 
-Alternately, you can use _VerifyDomainIdentity_ operation.
+__Method 2:__ Using the _VerifyDomainIdentity_ operation.  
+You can use verify you domain identity by executing the  `ses verify-domain-identity` command:
 ```
 $ aws ses verify-domain-identity --domain k-medics.site
 ```  
 This generate a single _VerificationToken_ which you must use to add a TXT record to your DNS settings. The _Host_ and exact _Value_ to use is unclear.
 
-2. __Enable DKIM signing if using VerifyDomainIdentity__  
+2. __Enable DKIM signing if using VerifyDomainIdentity operation__  
 
 If Easy DKIM signing is enabled for a domain, then Amazon SES uses DKIM to sign all email that it sends from addresses on that domain.
 
@@ -63,7 +65,7 @@ Copy the _MX_ and _TXT_ record and add them to your DNS settings.
 
 __NB:__ The value for the _MX_ record may have an integer and a string separated by a space. Use the integer for the _Priority_ and the string as the actual value for the DNS record.
 
-__Creating an email identity__    
+#### Creating an email identity
 If a domain identity has been configured, an email identity may not be needed if the email falls under the domain, except to override the domain configuration or for advances configurations settings.   
 1. __Verify email identity__  
 
