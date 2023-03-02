@@ -3,7 +3,8 @@
 [Developer Guide](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html)   
 [API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/Welcome.html)  
 [CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/sqs/index.html)    
-[JavaScript SDK DeveloperGuide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/welcome.html)  
+[JavaScript SDK Developer Guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/welcome.html)  
+[SDK Reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-sqs/index.html)   
 
 ## Introduction   
 __Basic Architecture__  
@@ -42,7 +43,7 @@ $ aws sqs send-message --queue-url https://sqs.eu-west-2.amazonaws.com/966727776
 
 __Receive message__  
 ```
-$ aws sqs receive-message --queue-url  https://sqs.eu-west-2.amazonaws.com/966727776968/shopping-orders.fifo
+$ aws sqs receive-message --queue-url  https://sqs.eu-west-2.amazonaws.com/966727776968/shopping-orders.fifo --max-number-of-messages 3 --visibility-timeout 15
 ```  
 
 __List all Queues__  

@@ -1,5 +1,6 @@
 # Amazon Web Services
-[AWS Docs](https://docs.aws.amazon.com/)
+[AWS Docs](https://docs.aws.amazon.com/)  
+[AWS CLI Reference](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html)  
 This reflects a journey of learning and working with AWS.  
 
 __Resources__  
