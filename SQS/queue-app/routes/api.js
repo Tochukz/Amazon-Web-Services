@@ -1,17 +1,18 @@
 const express = require('express');
-const { SQSClient, ReceiveMessageCommand, SendMessageCommand, }  = require('@aws-sdk/client-sqs');
+const { SQSClient, ReceiveMessageCommand, SendMessageCommand, DeleteMessageCommand }  = require('@aws-sdk/client-sqs');
 const router = express.Router();
+
+const region = process.env.AWS_REGION;
+const QueueUrl = process.env.QUEUE_URL;
 
 /* GET users listing. */
 router.get('/list-messages', async function(req, res, next) {
   try {
     const count = req.query.count
-    const region = process.env.AWS_REGION;
-    const QueueUrl = process.env.QUEUE_URL
     const input  = {
       QueueUrl,
       MaxNumberOfMessages: count,
-      VisibilityTimeout: 15,
+      VisibilityTimeout: 30,
     }
     const command = new ReceiveMessageCommand(input)
     const client  = new SQSClient( region );
@@ -27,8 +28,6 @@ router.get('/list-messages', async function(req, res, next) {
 router.post('/queue-message', async function(req, res, next) {
   try {
     const {message, salary, messageId } = req.body;
-    const region = process.env.AWS_REGION;
-    const QueueUrl = process.env.QUEUE_URL    
     const input = {
       QueueUrl,
       MessageBody: message,
@@ -51,5 +50,21 @@ router.post('/queue-message', async function(req, res, next) {
   } catch(err) {
     return next(err);
   }
-})
+});
+
+router.delete('/queue/delete-message', async function(req, res, next) {
+  try {
+    const ReceiptHandle = req.body.receiptHandle;
+    const input = {
+      QueueUrl,
+      ReceiptHandle,
+    }
+    const command = new DeleteMessageCommand(input);
+    const client  = new SQSClient( region );
+    const response = await client.send(command);
+    return res.status(204).json({});
+  } catch(err) {
+    return next(err);
+  }
+});
 module.exports = router;
