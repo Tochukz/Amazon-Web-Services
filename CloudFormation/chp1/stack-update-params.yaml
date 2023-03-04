@@ -1,0 +1,7 @@
+Parameters:
+  DBName: WordPressDB
+  DBPassword: wordyBlog125
+  DBRootPassword: rootwordyBlog219
+  DBUser: wordydb
+  InstanceType: t2.micro
+  KeyName: WordPressKey
