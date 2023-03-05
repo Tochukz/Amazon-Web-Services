@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Template for a static website which support SPAs like Angular, React and Vue.'
+
+Parameters: 
+  BucketName: 
+    Description: 'S3 bucket name to be created for the static website'
+    Type: String
+
+Resources:
+  WebsiteBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Delete 
+    Properties:
+      BucketName: !Ref BucketName
+      AccessControl: PublicRead
+      WebsiteConfiguration: 
+        IndexDocument: index.html
+        ErrorDocument: index.html  
+      # CorsConfiguration: 
+  BucketPolicy: 
+    Type: 'AWS::S3::BucketPolicy'
+    Properties: 
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument: 
+        Id: WebsitePolicyId 
+        Version: 2012-10-17
+        Statement: 
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow 
+          Principal: '*'
+          Action: 's3:GetObject'
+          Resource: !Join 
+          - ''
+          - - 'arn:aws:s3:::'
+            - !Ref WebsiteBucket
+            - /*
+
+Outputs: 
+  WebsiteUrl: 
+    Value: !GetAtt WebsiteBucket.WebsiteURL
+    Description: 'The URL for the S3 website'
+  DomainName: 
+    Value: !GetAtt WebsiteBucket.DomainName
+    Description: 'Domain name for the S3 bucket'
+    
+      
