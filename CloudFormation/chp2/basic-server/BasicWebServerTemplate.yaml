@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  InstanceType: 
+    Type: String 
+    Description: 'The instance type for the EC2 instance'
+    AllowedValues: 
+      - t2.nano
+      - t2.micro
+      - t2.small
+    ConstraintDescription: 'Must be a cheap instance type - t2.small or less'  
+  KeyName: 
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: 'An existing EC2 keypair name' 
+    ConstraintDescription: 'Must be an existing EC2 keypair in the applicable region'
+
+Mappings: 
+  RegionToAMI: 
+    eu-west-1: 
+      AMI: ''
+    eu-west-2: 
+      AMI: ''
+    eu-west-3: 
+      AMI: ''
+
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties: 
+      EnableDnsSupport: true
+      EnableHostnames: true
+      CidrBlock: 10.0.0.0/16
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties: 
+      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref VPC
+  WebServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Description: 'Security group to allow SSH and HTTP access'
+    Properties:
+      VpcId: !Ref VPC    
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22 
+          Cidr: 0.0.0.0/0
+        - IpProtocol: tcp 
+          FromPort: 80
+          ToPort: 80
+          Cidr: 0.0.0.0/0
+  WebServerInstance:
+    Type: 'AWS::EC2::Instance'
+    DependsOn: PublicRoute
+    Properties:
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - SubnetId: !Ref PublicSubnet    
+        - Groupset: 
+            - !Ref WebServerSecurityGroup
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          DeleteOnTerminate: true
+          SubnetId: !Ref PublicSubnet
+      InstanceType: !Ref InstanceType
+      ImageId: !FindInMap
+        - RegionToAMI
+        - !Ref 'AWS::REGION'
+        - AMI
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash
+            sudo yum update -y
+            # Install Nginx
+            sudo amazon-linux-extras install nginx1 -y
+            sudo service nginx start
+            # Enable Nginx to start at Boot time
+            sudo chkconfig nginx o 
+
+  InternetGateWay:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties: {}    
+  VpcGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId:
+        Ref: VPC
+      InternetGatewayId:
+        Ref: InternetGateWay   
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties: 
+      VpcId: !GetAtt VPC.VpcId    
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      GatewayId: !Ref InternetGateWay    
+      DestinationCidrBlock: 0.0.0.0/0
+
+Outputs: 
+  PublicIp: 
+    Value: !GetAtt WebServerInstance.PublicIp
+    Description: 'Public IP address of the EC2 instance'
+  DnsName: 
+    Value: !GetAttr WebServerInstance.DnsName 
+    Description: 'DNS namme for the EC2 instance'
