@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.nano" 
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "AmzLinuxKey2"
+  },
+  {
+    "ParameterKey": "EC2Name",
+    "ParameterValue": "BasicServerDevInstance"
+  }
+]

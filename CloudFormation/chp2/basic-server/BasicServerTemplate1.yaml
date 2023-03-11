@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: 2010-09-09
 
+Description: 'A basic web server with EC2 instance in a Subnet and having a security group'
+
+##Tofix: This template's EC2 do not allow SSH or HTTP access. 
+
 Parameters:
   InstanceType: 
     Type: String 
@@ -13,59 +17,84 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     Description: 'An existing EC2 keypair name' 
     ConstraintDescription: 'Must be an existing EC2 keypair in the applicable region'
+  EC2Name: 
+    Type: String
+    Description: 'Tag name for the EC2 instance'
+  Env: 
+    Type: String
+    Description: 'Deployment environment'
+    AllowedValues: 
+      - dev
+      - uat 
+      - prod
+    Default: dev
+    ConstraintDescription: 'Deployment environment must be one of dev, uat or prod'
 
 Mappings: 
   RegionToAMI: 
     eu-west-1: 
-      AMI: ''
+      AMI: 'ami-08fea9e08576c443b'
     eu-west-2: 
-      AMI: ''
+      AMI: 'ami-0055e70f580e9ae80'
     eu-west-3: 
-      AMI: ''
+      AMI: 'ami-09352f5c929bf417c'
+  Environment: 
+    dev: 
+      surfix: 'Dev'
+    staging: 
+      surfix: 'UAT'
+    prod: 
+      surfix: 'Prod'
 
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties: 
       EnableDnsSupport: true
-      EnableHostnames: true
+      EnableDnsHostnames: true
       CidrBlock: 10.0.0.0/16
+      Tags: 
+        - Key: Name
+          Value: 
+            !Join 
+            - ''
+            - - Basic
+              - !FindInMap [Environment, !Ref Env, surfix]
+              - WebServerVpc
   PublicSubnet:
     Type: 'AWS::EC2::Subnet'
     Properties: 
       CidrBlock: 10.0.0.0/24
       VpcId: !Ref VPC
+      MapPublicIpOnLaunch: true
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
-    Description: 'Security group to allow SSH and HTTP access'
     Properties:
       VpcId: !Ref VPC    
+      GroupDescription: 'Security group to allow SSH and HTTP access'
       SecurityGroupIngress: 
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22 
-          Cidr: 0.0.0.0/0
+          CidrIp: 0.0.0.0/0
+          Description: 'Allow all SSH access from any IP'
         - IpProtocol: tcp 
           FromPort: 80
           ToPort: 80
-          Cidr: 0.0.0.0/0
+          CidrIp: 0.0.0.0/0
+          Description: 'Allow all HTTP access from any IP'
   WebServerInstance:
     Type: 'AWS::EC2::Instance'
     DependsOn: PublicRoute
     Properties:
-      KeyName: !Ref KeyName
-      NetworkInterfaces:
-        - SubnetId: !Ref PublicSubnet    
-        - Groupset: 
-            - !Ref WebServerSecurityGroup
-          AssociatePublicIpAddress: true
-          DeviceIndex: 0
-          DeleteOnTerminate: true
-          SubnetId: !Ref PublicSubnet
+      KeyName: !Ref KeyName  
       InstanceType: !Ref InstanceType
+      SubnetId: !GetAtt PublicSubnet.SubnetId
+      SecurityGroupIds: 
+        -  !GetAtt WebServerSecurityGroup.GroupId
       ImageId: !FindInMap
         - RegionToAMI
-        - !Ref 'AWS::REGION'
+        - !Ref 'AWS::Region'
         - AMI
       UserData:
         Fn::Base64: 
@@ -77,7 +106,9 @@ Resources:
             sudo service nginx start
             # Enable Nginx to start at Boot time
             sudo chkconfig nginx o 
-
+      Tags: 
+        - Key: Name 
+          Value: !Ref EC2Name
   InternetGateWay:
     Type: 'AWS::EC2::InternetGateway'
     Properties: {}    
@@ -99,11 +130,16 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       GatewayId: !Ref InternetGateWay    
       DestinationCidrBlock: 0.0.0.0/0
+  # SubnetRouteTableAssoc: 
+  #   Type: 'AWS::EC2::SubnetRouteTableAssociation'
+  #   Properties: 
+  #     RouteTableId: !Ref PublicRouteTable
+  #     SubnetId: !Ref PublicSubnet
 
 Outputs: 
   PublicIp: 
     Value: !GetAtt WebServerInstance.PublicIp
     Description: 'Public IP address of the EC2 instance'
-  DnsName: 
-    Value: !GetAttr WebServerInstance.DnsName 
-    Description: 'DNS namme for the EC2 instance'
+  PublicDnsName: 
+    Value: !GetAtt WebServerInstance.PublicDnsName 
+    Description: 'Public DNS name for the EC2 instance'

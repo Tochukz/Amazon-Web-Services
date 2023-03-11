@@ -1,0 +1,4 @@
+Parameters: 
+  InstanceType: t2.nano 
+  KeyName: AmzLinuxKey2
+  EC2Name: BasicServerDevInstance
