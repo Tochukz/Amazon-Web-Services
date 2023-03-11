@@ -15,7 +15,7 @@ In most cases, creating a domain identity eliminates the need for creating and v
 To send email from the same domain or email address in more than one AWS Region, you must create and verify a separate identity for each Region.   
 Domain names are case-insensitive. Email addresses are case sensitive.  
 
-#### Creating a domain identity__    
+#### Creating a domain identity    
 1. __Verify domain identity__  
 
 __Method 1:__ Using the _VerifyDomainDkim_ operation.  
