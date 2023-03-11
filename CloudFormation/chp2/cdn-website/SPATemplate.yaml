@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: '2010-09-09' 
+
+Description: 'Template for SPA like React, Angular or Vue hosted with CloudFront'
+
+# Tofix:  The distribution endpoint redirects to S3 endpoint. 
+
+Parameters: 
+  Env: 
+    Type: String
+    Description: 'Deployment environment'
+    AllowedValues: [dev, staging, prod]
+    ConstraintDescription: 'Deployment environment must be one of dev, staging or prod'
+
+Mappings: 
+  Environment: 
+    dev: 
+      Prefix: 'dev'
+      UrlPrefix: 'dev.'
+      Surfix: 'Dev'      
+    staging:
+      Prefix: 'uat'
+      UrlPrefix: 'uat.'
+      Surfix: 'Staging'
+    prod: 
+      Prefix: 'prod'
+      UrlPrefix: ''
+      Surfix: 'Prod'
+
+Resources: 
+  SiteBucket:
+    Type: 'AWS::S3::Bucket' 
+    DeletionPolicy: Delete
+    Properties: 
+      BucketName: !Join 
+        - ''
+        - -  tochukwu-
+          - !FindInMap [Environment, !Ref Env, Prefix]
+          - -site-bucket
+  SiteDistribution: 
+    Type: 'AWS::CloudFront::Distribution'
+    DependsOn: SiteBucket
+    Properties: 
+      DistributionConfig: 
+        Enabled: true
+        # To add an alternate domain name (CNAME) to a CloudFront distribution, you must attach a trusted certificate that validates your authorization to use the domain name.
+        # Aliases: 
+        #   - !Join
+        #     - '' 
+        #     - - !FindInMap [Environment, !Ref Env, UrlPrefix]
+        #       - tochukwu.site
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: https-only
+          DefaultTTL: 3600
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: true
+          TargetOriginId: SiteBucket
+        Origins: 
+          - DomainName: !GetAtt SiteBucket.DomainName
+            Id: SiteBucket          
+            S3OriginConfig: 
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}        
+        DefaultRootObject: index.html
+        CustomErrorResponses:            
+          - ErrorCode: 403
+            ResponseCode: 200 
+            ResponsePagePath: /index.html                    
+      Tags: 
+        - Key: Name 
+          Value: !Join 
+            - ''
+            - - CFr
+              - !FindInMap [Environment, !Ref Env, Surfix] 
+              - Distribution
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub ${AWS::StackName}
+Outputs: 
+  BucketName: 
+    Value: !Ref SiteBucket  
+    Description: 'Bucket name of the S3 origin server'
+  DistributionId: 
+    Value: !Ref SiteDistribution
+    Description: 'Distribution Id for the distribution'
+  DistId: 
+    Value: !GetAtt SiteDistribution.Id 
+    Description: 'Same as the distribution Id above'
+  DomainName: 
+    Value: !GetAtt SiteDistribution.DomainName
+    Description: 'The endpoint of the distribution'
+  
+    
