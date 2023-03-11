@@ -61,6 +61,8 @@ $ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orde
 $ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --protocol sms --notification-endpoint +27633111000  
 # subscribe with http protocol 
 $ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --protocol https --notification-endpoint https://ojlinks.tochukwu.xyz/test-sns-subscription  
+# subscribe with SQS protocol 
+$ aws sns subscribe --topic-arn arn:aws:sns:eu-west-1:489790265916:TestTopic --protocol sqs --notification-endpoint arn:aws:sqs:eu-west-1:489790265916:TestQueue
 ```
 
 __List all subscriptions__  
@@ -78,3 +80,4 @@ __Publish message to a Topic__
 $  aws sns publish --topic-arn arn:aws:sns:eu-west-2:966727776968:cart-order-topic --message file://message.txt
 ```   
 
+[Implement HTTP endpoint for SNS subscription](https://docs.aws.amazon.com/sns/latest/dg/SendMessageToHttp.prepare.html)
