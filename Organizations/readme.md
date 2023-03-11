@@ -55,3 +55,40 @@ In a tag policy, you can specify tagging rules for specific resources.
 
 ![Account Ou Diagram](AccountOuDiagram.png)  
 _Account Organizational Unit_
+
+## Tutorials
+#### Tutorial 1: Creating and configuring an organization
+__Step 1__: Create your organization.  
+The account whose user is calling the _CreateOrganization_ operation automatically becomes the management account of the new organization.
+```
+$ aws organizations create-organization
+```
+If the account you use has never had its email address verified by AWS, a verification email is automatically sent to the address for verification.
+
+If your want the organization to be created withonly consolidated billing features enabled
+```
+$ aws organizations create-organization --feature-set CONSOLIDATED_BILLING
+```
+
+__Invite an existing account to join your organization__  
+__Step 2__:
+
+Invite an existing account using the account's associated email address
+```
+$ aws organizations invite-account-to-organization --target '{"Type": "EMAIL", "Id": "bbdchucks@gmail.com"}' --notes "This is a request for Chucks  account to join Tochukwu's organization."
+```
+Alternately, you can invite an existing account using the account id
+```
+$ aws organizations invite-account-to-organization --target '{"Type": "ACCOUNT", "Id": "966727776968"}' --notes "This is a invitation for Chucks  account to join Tochukwu's organization."
+```
+After you create an organization and before you can invite accounts to join, you must verify that you own the email address provided for the management account in the organization.
+
+__Viewing the details of an organization__  
+```
+$ aws organizations describe-organization
+```  
+
+__Delete the organization__   
+```
+$ aws organizations delete-organization
+```
