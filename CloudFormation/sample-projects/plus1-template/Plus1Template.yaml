@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: 'Infrastrcuture orchestrated for a non trivial web application'
+
+Parameters: 
+  Env:
+    Type: String
+    Description: "The deployment envionment: e.g dev, staging or prod"
+    AllowedValues: ["dev", "staging", "prod"]
+    ConstraintDescription: "The deployment environment must be dev, staging or prod"
+  Region: 
+    Type: String
+    Description: "The AWS region e.g eu-west-2"
+    AllowedValues: ["eu-west-1", "eu-west-2", "eu-west-3"]
+    ConstraintDescription: "The region must be either eu-west-1, eu-west-2 or eu-west-3"
+
+Mappings: 
+  RegionToAMI: 
+    eu-west-1: 
+      AMI: 'ami-08fea9e08576c443b'
+    eu-west-2: 
+      AMI: 'ami-0055e70f580e9ae80'
+    eu-west-3: 
+      AMI: 'ami-09352f5c929bf417c'
+  Environment: 
+    dev: 
+      surfix: 'Dev'
+    staging: 
+      surfix: 'UAT'
+    prod: 
+      surfix: 'Prod'
+
+Resources: 
+  CustomVpc:
+    Type: "AWS::EC2::VPC"
+    Properties: 
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: 
+            !Join
+              - ""
+              - - Plus1
+                - !FindInMap [Environment, !Ref Env, surfix]
+                - Stack
+  GateWay: 
+    Type: "AWS::EC2::InternetGateway"
+  GateWayVpcAttach: 
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties: 
+      VpcId: !Ref CustomVpc
+      InternetGatewayId: !GetAtt GateWay.InternetGatewayId
+  PublicSubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties: 
+      VpcId: !Ref CustomVpc
+      CidrBlock: 10.0.0.0/17
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: 
+        !Join 
+        - ""
+        - - !Ref Region 
+          - a
+  PrivateSubnet: 
+    Type: "AWS::EC2::Subnet"
+    Properties: 
+      VpcId: !Ref CustomVpc
+      CidrBlock: 10.0.128.0/18
+      MapPublicIpOnLaunch: false
+      AvailabilityZone: 
+        !Join
+        - ""
+        - - !Ref Region
+          -  b
+  WebSecurityGroup: 
+    Type: "AWS::EC2::SecurityGroup"
+    Properties: 
+      VpcId: !Ref CustomVpc
+      GroupName: "WebSecurityGroup"
+      GroupDescription: "Allows HTTP, HTTPS and SSH access from any IP"
+      SecurityGroupIngress: 
+        - Description: "Allow HTTP access from any IP" 
+          CidrIp: 0.0.0.0/0
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+        - Description: "Allow HTTPS access from any IP"
+          CidrIp: 0.0.0.0/0
+          FromPort: 443
+          ToPort: 443
+          IpProtocol: tcp
+        - Description: "Allow SSH access from any IP"
+          CidrIp: 0.0.0.0/0
+          FromPort: 22
+          ToPort: 22
+          IpProtocol: tcp
