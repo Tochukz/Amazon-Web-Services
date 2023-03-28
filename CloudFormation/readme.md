@@ -4,6 +4,7 @@
 [API Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/Welcome.html)   
 [CLI Reference](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/index.html)  
 [SDK Reference](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudformation/index.html)  
+[Resource and property types reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
 
 ## Introduction  
 By using CloudFormation, you easily manage a collection of resources as a single unit.

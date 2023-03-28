@@ -1,3 +1,5 @@
 Parameters:
   Env: dev
   Region: eu-west-1
+  DbName: plus1_temp_dev_db
+  DbUser: plus1-temp-dev-usr
