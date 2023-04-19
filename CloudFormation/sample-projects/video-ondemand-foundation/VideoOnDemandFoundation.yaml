@@ -1,0 +1,228 @@
+Description: '(SO0146) v1.2.1: Video on Demand on AWS Foundation Solution Implementation'
+
+Parameters:
+  emailAddress:
+    Description: The admin email address to receive SNS notifications for job status.
+    Type: String
+    AllowedPattern: ^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$
+
+Mappings: {Send: {AnonymousUsage: {Data: "Yes"}}}
+
+Conditions: {CDKMetadataAvailable: !Or [!Or [!Equals [!Ref "AWS::Region", af-south-1], !Equals [!Ref "AWS::Region", ap-east-1], !Equals [!Ref "AWS::Region", ap-northeast-1], !Equals [!Ref "AWS::Region", ap-northeast-2], !Equals [!Ref "AWS::Region", ap-south-1], !Equals [!Ref "AWS::Region", ap-southeast-1], !Equals [!Ref "AWS::Region", ap-southeast-2], !Equals [!Ref "AWS::Region", ca-central-1], !Equals [!Ref "AWS::Region", cn-north-1], !Equals [!Ref "AWS::Region", cn-northwest-1]], !Or [!Equals [!Ref "AWS::Region", eu-central-1], !Equals [!Ref "AWS::Region", eu-north-1], !Equals [!Ref "AWS::Region", eu-south-1], !Equals [!Ref "AWS::Region", eu-west-1], !Equals [!Ref "AWS::Region", eu-west-2], !Equals [!Ref "AWS::Region", eu-west-3], !Equals [!Ref "AWS::Region", me-south-1], !Equals [!Ref "AWS::Region", sa-east-1], !Equals [!Ref "AWS::Region", us-east-1], !Equals [!Ref "AWS::Region", us-east-2]], !Or [!Equals [!Ref "AWS::Region", us-west-1], !Equals [!Ref "AWS::Region", us-west-2]]]}
+
+Resources:
+  Logs6819BB44:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    Metadata: {cfn_nag: {rules_to_suppress: [{id: W35, reason: Logs bucket does not require logging configuration}, {id: W51, reason: Logs bucket is private and does not require a bucket policy}]}}
+    Properties: {AccessControl: LogDeliveryWrite, BucketEncryption: {ServerSideEncryptionConfiguration: [{ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}}]}, OwnershipControls: {Rules: [{ObjectOwnership: ObjectWriter}]}, PublicAccessBlockConfiguration: {BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true}}
+
+  Source71E471F1:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    Metadata: {cfn_nag: {rules_to_suppress: [{id: W51, reason: source bucket is private and does not require a bucket policy}]}}
+    Properties: {BucketEncryption: {ServerSideEncryptionConfiguration: [{ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}}]}, LoggingConfiguration: {DestinationBucketName: !Ref "Logs6819BB44", LogFilePrefix: source-bucket-logs/}, PublicAccessBlockConfiguration: {BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true}}
+
+  Destination920A3C57:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    Metadata: {'aws:cdk:path': VodFoundation/Destination/Resource}
+    Properties: {BucketEncryption: {ServerSideEncryptionConfiguration: [{ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}}]}, CorsConfiguration: {CorsRules: [{AllowedHeaders: ['*'], AllowedMethods: [GET], AllowedOrigins: ['*'], MaxAge: 3000}]}, LoggingConfiguration: {DestinationBucketName: !Ref "Logs6819BB44", LogFilePrefix: destination-bucket-logs/}, PublicAccessBlockConfiguration: {BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true}}
+
+  DestinationPolicy7982387E:
+    Type: AWS::S3::BucketPolicy
+    Metadata: {'aws:cdk:path': VodFoundation/Destination/Policy/Resource, cfn_nag: {rules_to_suppress: [{id: F16, reason: Public website bucket policy requires a wildcard principal}]}}
+    Properties: {Bucket: !Ref "Destination920A3C57", PolicyDocument: {Statement: [{Action: 's3:GetObject', Effect: Allow, Principal: {CanonicalUser: !GetAtt CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A.S3CanonicalUserId}, Resource: !Join ["", [!GetAtt Destination920A3C57.Arn, /*]]}], Version: "2012-10-17"}}
+
+  CloudFrontCloudfrontLoggingBucketE23C521E:
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    Metadata: {'aws:cdk:path': VodFoundation/CloudFront/CloudfrontLoggingBucket/Resource, cfn_nag: {rules_to_suppress: [{id: W35, reason: This S3 bucket is used as the access logging bucket for CloudFront Distribution}]}}
+    Properties: {AccessControl: LogDeliveryWrite, BucketEncryption: {ServerSideEncryptionConfiguration: [{ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}}]}, OwnershipControls: {Rules: [{ObjectOwnership: ObjectWriter}]}, PublicAccessBlockConfiguration: {BlockPublicAcls: true, BlockPublicPolicy: true, IgnorePublicAcls: true, RestrictPublicBuckets: true}, VersioningConfiguration: {Status: Enabled}}
+
+  CloudFrontCloudfrontLoggingBucketPolicyD60AA01A:
+    Type: AWS::S3::BucketPolicy
+    Metadata: {'aws:cdk:path': VodFoundation/CloudFront/CloudfrontLoggingBucket/Policy/Resource}
+    Properties: {Bucket: !Ref "CloudFrontCloudfrontLoggingBucketE23C521E", PolicyDocument: {Statement: [{Action: 's3:*', Condition: {Bool: {'aws:SecureTransport': "false"}}, Effect: Deny, Principal: {AWS: '*'}, Resource: [!GetAtt CloudFrontCloudfrontLoggingBucketE23C521E.Arn, !Join ["", [!GetAtt CloudFrontCloudfrontLoggingBucketE23C521E.Arn, /*]]]}], Version: "2012-10-17"}}
+
+  CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Metadata: {'aws:cdk:path': VodFoundation/CloudFront/CloudFrontDistribution/Origin1/S3Origin/Resource}
+    Properties: {CloudFrontOriginAccessIdentityConfig: {Comment: Identity for VodFoundationCloudFrontCloudFrontDistributionOrigin1F191A578}}
+
+  CloudFrontCloudFrontDistribution824F3346:
+    Type: AWS::CloudFront::Distribution
+    Metadata: {'aws:cdk:path': VodFoundation/CloudFront/CloudFrontDistribution/Resource, cfn_nag: {rules_to_suppress: [{id: W70, reason: 'Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion'}]}}
+    Properties: {DistributionConfig: {Comment: !Join ["", [!Ref "AWS::StackName", ' Video on Demand Foundation']], DefaultCacheBehavior: {CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6, Compress: true, TargetOriginId: VodFoundationCloudFrontCloudFrontDistributionOrigin1F191A578, ViewerProtocolPolicy: redirect-to-https}, DefaultRootObject: index.html, Enabled: true, HttpVersion: http2, IPV6Enabled: true, Logging: {Bucket: !GetAtt CloudFrontCloudfrontLoggingBucketE23C521E.RegionalDomainName}, Origins: [{DomainName: !GetAtt Destination920A3C57.RegionalDomainName, Id: VodFoundationCloudFrontCloudFrontDistributionOrigin1F191A578, S3OriginConfig: {OriginAccessIdentity: !Join ["", [origin-access-identity/cloudfront/, !Ref "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A"]]}}]}}
+
+  MediaConvertRole031A64A9:
+    Type: AWS::IAM::Role
+    Metadata: {'aws:cdk:path': VodFoundation/MediaConvertRole/Resource}
+    Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: mediaconvert.amazonaws.com}}], Version: "2012-10-17"}}
+
+  MediaconvertPolicy9E3026EC:
+    Type: AWS::IAM::Policy
+    Metadata: {'aws:cdk:path': VodFoundation/MediaconvertPolicy/Resource}
+    Properties: {PolicyDocument: {Statement: [{Action: ['s3:GetObject', 's3:PutObject'], Effect: Allow, Resource: [!Join ["", [!GetAtt Source71E471F1.Arn, /*]], !Join ["", [!GetAtt Destination920A3C57.Arn, /*]]]}, {Action: 'execute-api:Invoke', Effect: Allow, Resource: !Join ["", ['arn:', !Ref "AWS::Partition", ':execute-api:', !Ref "AWS::Region", ':', !Ref "AWS::AccountId", ':*']]}], Version: "2012-10-17"}, PolicyName: MediaconvertPolicy9E3026EC, Roles: [!Ref "MediaConvertRole031A64A9"]}
+
+  CustomResourceServiceRoleE774390D:
+    Type: AWS::IAM::Role
+    Metadata: {'aws:cdk:path': VodFoundation/CustomResource/ServiceRole/Resource}
+    Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: "2012-10-17"}, ManagedPolicyArns: [!Join ["", ['arn:', !Ref "AWS::Partition", ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]]}
+
+  CustomResourceServiceRoleDefaultPolicy62213138:
+    Type: AWS::IAM::Policy
+    Metadata: {'aws:cdk:path': VodFoundation/CustomResource/ServiceRole/DefaultPolicy/Resource}
+    Properties: {PolicyDocument: {Statement: [{Action: ['s3:PutObject', 's3:PutBucketNotification'], Effect: Allow, Resource: [!GetAtt Source71E471F1.Arn, !Join ["", [!GetAtt Source71E471F1.Arn, /*]]]}, {Action: 'mediaconvert:DescribeEndpoints', Effect: Allow, Resource: !Join ["", ['arn:aws:mediaconvert:', !Ref "AWS::Region", ':', !Ref "AWS::AccountId", ':*']]}], Version: "2012-10-17"}, PolicyName: CustomResourceServiceRoleDefaultPolicy62213138, Roles: [!Ref "CustomResourceServiceRoleE774390D"]}
+
+  CustomResource8CDCD7A7:
+    Type: AWS::Lambda::Function
+    DependsOn: [CustomResourceServiceRoleDefaultPolicy62213138, CustomResourceServiceRoleE774390D]
+    Metadata: {cfn_nag: {rules_to_suppress: [{id: W58, reason: 'Invalid warning: function has access to cloudwatch'}, {id: W89, reason: 'Invalid warning: lambda not needed in VPC'}, {id: W92, reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'}]}}
+    Properties: {Code: {S3Bucket: !Sub "solutions-${AWS::Region}", S3Key: video-on-demand-on-aws-foundation/v1.2.1/asset1520d52d7aa50874013478603d5e81f6414887f4680c0a986605cb8e94f6e818.zip}, Role: !GetAtt CustomResourceServiceRoleE774390D.Arn, Description: CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint, Environment: {Variables: {SOLUTION_IDENTIFIER: AwsSolution/SO0146/v1.1.0}}, Handler: index.handler, Runtime: nodejs12.x, Timeout: 30}
+
+  Endpoint:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Type: AWS::CloudFormation::CustomResource
+    Metadata: {'aws:cdk:path': VodFoundation/Endpoint/Default}
+    Properties: {ServiceToken: !GetAtt CustomResource8CDCD7A7.Arn}
+
+  jobSubmitServiceRole829286B1:
+    Type: AWS::IAM::Role
+    Metadata: {'aws:cdk:path': VodFoundation/jobSubmit/ServiceRole/Resource}
+    Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: "2012-10-17"}, ManagedPolicyArns: [!Join ["", ['arn:', !Ref "AWS::Partition", ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]]}
+
+  jobSubmitServiceRoleDefaultPolicyEC39C00E:
+    Type: AWS::IAM::Policy
+    Metadata: {'aws:cdk:path': VodFoundation/jobSubmit/ServiceRole/DefaultPolicy/Resource}
+    Properties: {PolicyDocument: {Statement: [{Action: 'iam:PassRole', Effect: Allow, Resource: !GetAtt MediaConvertRole031A64A9.Arn}, {Action: 'mediaconvert:CreateJob', Effect: Allow, Resource: !Join ["", ['arn:', !Ref "AWS::Partition", ':mediaconvert:', !Ref "AWS::Region", ':', !Ref "AWS::AccountId", ':*']]}, {Action: 's3:GetObject', Effect: Allow, Resource: [!GetAtt Source71E471F1.Arn, !Join ["", [!GetAtt Source71E471F1.Arn, /*]]]}, {Action: 'sns:Publish', Effect: Allow, Resource: !Ref "NotificationSnsTopicB941FD22"}], Version: "2012-10-17"}, PolicyName: jobSubmitServiceRoleDefaultPolicyEC39C00E, Roles: [!Ref "jobSubmitServiceRole829286B1"]}
+
+  jobSubmitB391E42F:
+    Type: AWS::Lambda::Function
+    DependsOn: [jobSubmitServiceRoleDefaultPolicyEC39C00E, jobSubmitServiceRole829286B1]
+    Metadata: {cfn_nag: {rules_to_suppress: [{id: W58, reason: 'Invalid warning: function has access to cloudwatch'}, {id: W89, reason: 'Invalid warning: lambda not needed in VPC'}, {id: W92, reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'}]}}
+    Properties: {Code: {S3Bucket: !Sub "solutions-${AWS::Region}", S3Key: video-on-demand-on-aws-foundation/v1.2.1/asset6c70e858542f614bc1b037814313dbb137207470249dcf2b3f784884fef42b6d.zip}, Role: !GetAtt jobSubmitServiceRole829286B1.Arn, Description: Submits an Encoding job to MediaConvert, Environment: {Variables: {MEDIACONVERT_ENDPOINT: !GetAtt Endpoint.Endpoint, MEDIACONVERT_ROLE: !GetAtt MediaConvertRole031A64A9.Arn, JOB_SETTINGS: job-settings.json, DESTINATION_BUCKET: !Ref "Destination920A3C57", SOLUTION_ID: SO0146, STACKNAME: !Ref "AWS::StackName", SOLUTION_IDENTIFIER: AwsSolution/SO0146/v1.1.0, SNS_TOPIC_ARN: !Ref "NotificationSnsTopicB941FD22", SNS_TOPIC_NAME: !GetAtt NotificationSnsTopicB941FD22.TopicName}}, Handler: index.handler, Runtime: nodejs12.x, Timeout: 30}
+
+  jobSubmitEventInvokeConfig0385F502:
+    Type: AWS::Lambda::EventInvokeConfig
+    Metadata: {'aws:cdk:path': VodFoundation/jobSubmit/EventInvokeConfig/Resource}
+    Properties: {FunctionName: !Ref "jobSubmitB391E42F", Qualifier: $LATEST, MaximumRetryAttempts: 0}
+
+  jobSubmitS3Trigger3DEB8D7C:
+    Type: AWS::Lambda::Permission
+    Metadata: {'aws:cdk:path': VodFoundation/jobSubmit/S3Trigger}
+    Properties: {Action: 'lambda:InvokeFunction', FunctionName: !GetAtt jobSubmitB391E42F.Arn, Principal: s3.amazonaws.com, SourceAccount: !Ref "AWS::AccountId"}
+
+  JobCompleteServiceRole2855C268:
+    Type: AWS::IAM::Role
+    Metadata: {'aws:cdk:path': VodFoundation/JobComplete/ServiceRole/Resource}
+    Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: "2012-10-17"}, ManagedPolicyArns: [!Join ["", ['arn:', !Ref "AWS::Partition", ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]]}
+
+  JobCompleteServiceRoleDefaultPolicy686BE0F5:
+    Type: AWS::IAM::Policy
+    Metadata: {'aws:cdk:path': VodFoundation/JobComplete/ServiceRole/DefaultPolicy/Resource}
+    Properties: {PolicyDocument: {Statement: [{Action: 'mediaconvert:GetJob', Effect: Allow, Resource: !Join ["", ['arn:', !Ref "AWS::Partition", ':mediaconvert:', !Ref "AWS::Region", ':', !Ref "AWS::AccountId", ':*']]}, {Action: ['s3:GetObject', 's3:PutObject'], Effect: Allow, Resource: !Join ["", [!GetAtt Source71E471F1.Arn, /*]]}, {Action: 'sns:Publish', Effect: Allow, Resource: !Ref "NotificationSnsTopicB941FD22"}], Version: "2012-10-17"}, PolicyName: JobCompleteServiceRoleDefaultPolicy686BE0F5, Roles: [!Ref "JobCompleteServiceRole2855C268"]}
+
+  JobComplete703682D0:
+    Type: AWS::Lambda::Function
+    DependsOn: [JobCompleteServiceRoleDefaultPolicy686BE0F5, JobCompleteServiceRole2855C268]
+    Metadata: {cfn_nag: {rules_to_suppress: [{id: W58, reason: 'Invalid warning: function has access to cloudwatch'}, {id: W89, reason: 'Invalid warning: lambda not needed in VPC'}, {id: W92, reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'}]}}
+    Properties: {Code: {S3Bucket: !Sub "solutions-${AWS::Region}", S3Key: video-on-demand-on-aws-foundation/v1.2.1/asset779339e6dc9b5e00ab9da6f80f4a11249cef9f055e5bb4f1012bccb087a625f9.zip}, Role: !GetAtt JobCompleteServiceRole2855C268.Arn, Description: 'Triggered by Cloudwatch Events,processes completed MediaConvert jobs.', Environment: {Variables: {MEDIACONVERT_ENDPOINT: !GetAtt Endpoint.Endpoint, CLOUDFRONT_DOMAIN: !GetAtt CloudFrontCloudFrontDistribution824F3346.DomainName, SOURCE_BUCKET: !Ref "Source71E471F1", JOB_MANIFEST: jobs-manifest.json, STACKNAME: !Ref "AWS::StackName", METRICS: !FindInMap [Send, AnonymousUsage, Data], SOLUTION_ID: SO0146, VERSION: 1.1.0, UUID: !GetAtt Endpoint.UUID, SOLUTION_IDENTIFIER: AwsSolution/SO0146/v1.1.0, SNS_TOPIC_ARN: !Ref "NotificationSnsTopicB941FD22", SNS_TOPIC_NAME: !GetAtt NotificationSnsTopicB941FD22.TopicName}}, Handler: index.handler, Runtime: nodejs12.x, Timeout: 30}
+
+  JobCompleteEventInvokeConfig692D89BE:
+    Type: AWS::Lambda::EventInvokeConfig
+    Metadata: {'aws:cdk:path': VodFoundation/JobComplete/EventInvokeConfig/Resource}
+    Properties: {FunctionName: !Ref "JobComplete703682D0", Qualifier: $LATEST, MaximumRetryAttempts: 0}
+
+  JobCompleteAwsEventsLambdaInvokePermission1ED79B615:
+    Type: AWS::Lambda::Permission
+    Metadata: {'aws:cdk:path': VodFoundation/JobComplete/AwsEventsLambdaInvokePermission-1}
+    Properties: {Action: 'lambda:InvokeFunction', FunctionName: !GetAtt JobComplete703682D0.Arn, Principal: events.amazonaws.com, SourceArn: !GetAtt EventTriggerEventTriggerWEventsRule68648BE7.Arn}
+
+  S3Config:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Type: AWS::CloudFormation::CustomResource
+    Metadata: {'aws:cdk:path': VodFoundation/S3Config/Default}
+    Properties: {ServiceToken: !GetAtt CustomResource8CDCD7A7.Arn, SourceBucket: !Ref "Source71E471F1", LambdaArn: !GetAtt jobSubmitB391E42F.Arn}
+
+  EventTriggerEventTriggerWEventsRule68648BE7:
+    Type: AWS::Events::Rule
+    Metadata: {'aws:cdk:path': VodFoundation/EventTrigger/EventTriggerW/EventsRule/Resource}
+    Properties: {EventPattern: {source: [aws.mediaconvert], detail: {userMetadata: {StackName: [!Ref "AWS::StackName"]}, status: [COMPLETE, ERROR, CANCELED, INPUT_INFORMATION]}}, State: ENABLED, Targets: [{Arn: !GetAtt JobComplete703682D0.Arn, Id: Target0}]}
+
+  NotificationSnsTopicB941FD22:
+    Type: AWS::SNS::Topic
+    Metadata: {'aws:cdk:path': VodFoundation/Notification/SnsTopic/Resource}
+    Properties: {KmsMasterKeyId: !Join ["", ['arn:', !Ref "AWS::Partition", ':kms:', !Ref "AWS::Region", ':', !Ref "AWS::AccountId", ':alias/aws/sns']]}
+
+  NotificationSnsTopicPolicy4027082A:
+    Type: AWS::SNS::TopicPolicy
+    Metadata: {'aws:cdk:path': VodFoundation/Notification/SnsTopic/Policy/Resource}
+    Properties: {PolicyDocument: {Statement: [{Action: ['SNS:Publish', 'SNS:RemovePermission', 'SNS:SetTopicAttributes', 'SNS:DeleteTopic', 'SNS:ListSubscriptionsByTopic', 'SNS:GetTopicAttributes', 'SNS:Receive', 'SNS:AddPermission', 'SNS:Subscribe'], Condition: {StringEquals: {'AWS:SourceOwner': !Ref "AWS::AccountId"}}, Effect: Allow, Principal: {AWS: !Join ["", ['arn:', !Ref "AWS::Partition", ':iam::', !Ref "AWS::AccountId", ':root']]}, Resource: !Ref "NotificationSnsTopicB941FD22", Sid: TopicOwnerOnlyAccess}, {Action: ['SNS:Publish', 'SNS:RemovePermission', 'SNS:SetTopicAttributes', 'SNS:DeleteTopic', 'SNS:ListSubscriptionsByTopic', 'SNS:GetTopicAttributes', 'SNS:Receive', 'SNS:AddPermission', 'SNS:Subscribe'], Condition: {Bool: {'aws:SecureTransport': "false"}}, Effect: Deny, Principal: {AWS: '*'}, Resource: !Ref "NotificationSnsTopicB941FD22", Sid: HttpsOnly}], Version: "2012-10-17"}, Topics: [!Ref "NotificationSnsTopicB941FD22"]}
+
+  NotificationSnsTopicTokenSubscription1209F3ABA:
+    Type: AWS::SNS::Subscription
+    Metadata: {'aws:cdk:path': 'VodFoundation/Notification/SnsTopic/TokenSubscription:1/Resource'}
+    Properties: {Protocol: email, TopicArn: !Ref "NotificationSnsTopicB941FD22", Endpoint: !Ref "emailAddress"}
+
+  AppRegistryAttributeGroup7AF07446:
+    Type: AWS::ServiceCatalogAppRegistry::AttributeGroup
+    Metadata: {'aws:cdk:path': VodFoundation/AppRegistryAttributeGroup/Resource}
+    Properties: {Attributes: {ApplicationType: AWS-Solutions, SolutionVersion: v1.2.1, SolutionID: SO0146, SolutionName: Video on Demand on AWS Foundation}, Name: !Ref "AWS::StackName", Description: Attribute group for solution information.}
+
+  AppRegistryApp5349BE86:
+    Type: AWS::ServiceCatalogAppRegistry::Application
+    DependsOn: [AppRegistryAttributeGroup7AF07446]
+    Metadata: {'aws:cdk:path': VodFoundation/AppRegistryApp/Resource}
+    Properties: {Name: !Join ["", [vod-foundation-, !Ref "AWS::StackName"]], Description: Service Catalog application to track and manage all your resources. The SolutionId is SO0146 and SolutionVersion is v1.2.1., Tags: {ApplicationType: AWS-Solutions, appRegistryApplicationName: vod-foundation-stack, SolutionDomain: CloudFoundations, solutionId: SO0146, SolutionName: Video on Demand on AWS Foundation, SolutionVersion: v1.2.1}}
+
+  AppRegistryAppResourceAssociatione69b82403aef2E41D4E6:
+    Type: AWS::ServiceCatalogAppRegistry::ResourceAssociation
+    DependsOn: [AppRegistryAttributeGroup7AF07446]
+    Metadata: {'aws:cdk:path': VodFoundation/AppRegistryApp/ResourceAssociatione69b82403aef}
+    Properties: {Application: !GetAtt AppRegistryApp5349BE86.Id, Resource: !Ref "AWS::StackId", ResourceType: CFN_STACK}
+
+  AppRegistryAppAttributeGroupAssociation29c2abfce063A5D459E8:
+    Type: AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
+    DependsOn: [AppRegistryAttributeGroup7AF07446]
+    Metadata: {'aws:cdk:path': VodFoundation/AppRegistryApp/AttributeGroupAssociation29c2abfce063}
+    Properties: {Application: !GetAtt AppRegistryApp5349BE86.Id, AttributeGroup: !GetAtt AppRegistryAttributeGroup7AF07446.Id}
+
+  ApplicationInsightsApp:
+    Type: AWS::ApplicationInsights::Application
+    DependsOn: [AppRegistryAppAttributeGroupAssociation29c2abfce063A5D459E8, AppRegistryApp5349BE86, AppRegistryAppResourceAssociatione69b82403aef2E41D4E6]
+    Metadata: {'aws:cdk:path': VodFoundation/ApplicationInsightsApp}
+    Properties: {ResourceGroupName: !Join ["", [AWS_AppRegistry_Application-vod-foundation-, !Ref "AWS::StackName"]], AutoConfigurationEnabled: true, CWEMonitorEnabled: true, OpsCenterEnabled: true}
+
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Metadata: {'aws:cdk:path': VodFoundation/CDKMetadata/Default}
+    Properties: {Analytics: 'v2:deflate64:H4sIAAAAAAAA/3VTwW7bMAz9lt1tZUGADrstzdahQIcGSX5AkRmPjS0aopShMPzvoyQndortYpFP5OMTSS/V8stKff70Tf/hsjfVedEbcqD6vdfmXGxO9pfuOrR1NLfa6RY8uGJDlr0LxhdrZvASXKeYwJ7aHTAFZyCm3Ow5+Bp8F3y0hKdCj2SHIgngleofgzlDuh2tfGypQfM+waOfnUfNMBSmoVCdHFmv+u8oAvEYInnx6lD0rY0B5ucKrEefmDYx4Skm/C9iTjMUqFvV76jJT4vnpCpbQ9Ho9lhp1T8Fa1JxubvZPy5C/WwvdAZ5+glTW/8JbsG1yJzK8qrUsc2sUrcLiAksSsKoRE6JsgIdqEMTsWyk76Rx7u7DkY3D7qpx7gsZuAsaMNrrhmpZAQd1bMW76tc+dwR+OgpdTP2ArLtOKugr8Qf3ugjyFDI4Rd1xzC5lMyYCtIz1b3n7Pe8ggqlJQ+LSXHeTF3mpb1tRynpNIz/QfjW2snTSwXKcXBoHx54e6CVBOerosKrvozJ0C8tXZRxERqSEZRFnqQL1xovL8kEtv8rv9saIUlTWrAW1y+dfY6swc4sDAAA='}
+    Condition: CDKMetadataAvailable
+
+Outputs:
+  SourceBucket:
+    Description: Source S3 Bucket used to host source video and MediaConvert job settings files
+    Value: !Ref "Source71E471F1"
+    Export: {Name: !Join ["", [!Ref "AWS::StackName", -SourceBucket]]}
+
+  DestinationBucket:
+    Description: Source S3 Bucket used to host all MediaConvert ouputs
+    Value: !Ref "Destination920A3C57"
+    Export: {Name: !Join ["", [!Ref "AWS::StackName", -DestinationBucket]]}
+
+  CloudFrontDomain:
+    Description: CloudFront Domain Name
+    Value: !GetAtt CloudFrontCloudFrontDistribution824F3346.DomainName
+    Export: {Name: !Join ["", [!Ref "AWS::StackName", -CloudFrontDomain]]}
+
+  SnsTopic:
+    Description: SNS Topic used to capture the VOD workflow outputs including errors
+    Value: !GetAtt NotificationSnsTopicB941FD22.TopicName
+    Export: {Name: !Join ["", [!Ref "AWS::StackName", -SnsTopic]]}
