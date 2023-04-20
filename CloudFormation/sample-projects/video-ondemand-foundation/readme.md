@@ -1,12 +1,10 @@
 # Video on Demand on AWS Foundation
-
 [Implementation Docs](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/solution-overview.html)
 
 ## Solution Overview
-
 ### Required AWS Service components
 
-1. **AWS Elemental Media Convert**  
+1. **AWS Elemental MediaConvert**  
    To transcode media files from their source format into versions that play back on most user devices.
 2. **Amazon CloudFront**  
    For global distribution.
@@ -20,14 +18,15 @@
    To send notifications for completed jobs.
 
 ## Cost
-
 The total cost for running this solution depends on
-
 1. the size of the videos,
 2. the number of outputs created, and
-3. the number of views the published content receives through Amazon CloudFront.
+3. the number of views the published content receives through Amazon CloudFront.  
 
-| AWS Service                | Picing        | Dimension (5 minutes video)          | Cost per Month |
+AWS Elemental MediaConvert composes the majority of the cost.  
+You should create a budget through [AWS Cost Explorer](http://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs.
+
+| AWS Service                | Pricing        | Dimension (5 minutes video)          | Cost per Month |
 | -------------------------- | ------------- | ------------------------------------ | -------------- |
 | Amazon CloudFront          | $0.085 per GB | 0.75 MB/s _ 1000 users _ 300 seconds |
 | Amazon S3                  |               |                                      |
