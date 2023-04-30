@@ -23,11 +23,18 @@ __Common rain commands__
 
 Description  | Command 
 -------------|----------
-Deploy stack | `rain deploy Plus1Template.yaml Plus1DevStack --config params/dev-params.yaml`
+Deploy stack | `rain deploy Plus1Template.yaml Plus1TempDevStack --config params/dev-params.yaml --region eu-west-1`
 List stack   | `rain ls` 
 Check events | `rain logs `
-Delete stack | `rain rm Plus1DevStack`
-
+Delete stack | `rain rm Plus1TempDevStack`
+__NB__: If you are targeting a region different than you default profile region for deployment, export that region as environment variable
+```
+$ export AWS_REGION=eu-west-1
+```
+Alternately, you can use the region flag 
+```
+$ rain deploy Plus1Template.yaml Plus1DevStack --config params/dev-params.yaml --region eu-west-1
+```
 ### Setup and pre-deployment 
 The sections that follows describes the steps that are required before the deployment of the resources.    
 

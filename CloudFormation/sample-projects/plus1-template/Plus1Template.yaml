@@ -40,12 +40,16 @@ Mappings:
     dev:
       surfix: Dev
       dbClass: db.t3.micro
+      instanceType: t2.nano
     staging:
       surfix: UAT
       dbClass: db.t3.micro
+      instanceType: t2.nano
     prod:
       surfix: Prod
       dbClass: db.t4g.micro
+      instanceType: t2.micro
+
 Resources:
   CustomVpc:
     Type: AWS::EC2::VPC
@@ -66,12 +70,14 @@ Resources:
 
   GateWayVpcAttach:
     Type: AWS::EC2::VPCGatewayAttachment
+    DependsOn: [CustomVpc, GateWay]
     Properties:
       VpcId: !Ref CustomVpc
       InternetGatewayId: !GetAtt GateWay.InternetGatewayId
 
   PublicSubnet:
     Type: AWS::EC2::Subnet
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
       CidrBlock: 10.0.0.0/17
@@ -83,6 +89,7 @@ Resources:
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
       CidrBlock: 10.0.128.0/18
@@ -94,9 +101,10 @@ Resources:
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
-      CidrBlock: 10.0.128.0/18
+      CidrBlock: 10.0.192.0/18
       MapPublicIpOnLaunch: false
       AvailabilityZone: !Join
         - ""
@@ -105,23 +113,28 @@ Resources:
 
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
+    DependsOn: [PrivateSubnet1, PrivateSubnet2]
     Properties:
       DBSubnetGroupDescription: Subnet group for database
       DBSubnetGroupName: SubnetGroupForPostgreSQL
       SubnetIds: [!Ref PrivateSubnet1, !Ref PrivateSubnet2]
-      Tags: !Join
-        - ""
-        - - Plus1Temp
-          - !FindInMap [Environment, !Ref Env, surfix]
-          - DbSubnetGp
+      Tags: 
+        - Key: Name
+          Value: !Join
+            - ""
+            - - Plus1Temp
+              - !FindInMap [Environment, !Ref Env, surfix]
+              - DbSubnetGp
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
 
   PublicRoute:
     Type: AWS::EC2::Route
+    DependsOn: [GateWay, PublicRouteTable]
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !GetAtt GateWay.InternetGatewayId
@@ -129,35 +142,41 @@ Resources:
 
   SubnetPublicRouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: [PublicRouteTable, PublicSubnet]
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet
 
   NetworkInterface:
     Type: AWS::EC2::NetworkInterface
+    DependsOn: [PrivateSubnet1, WebSecurityGroup]
     Properties:
       SubnetId: !Ref PrivateSubnet1
       GroupSet: [!Ref WebSecurityGroup]
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
 
   PrivateRoute:
     Type: AWS::EC2::Route
+    DependsOn: NetworkInterface
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       NetworkInterfaceId: !Ref NetworkInterface
 
   SubnetPrivateRouteTableAssoc:
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: [PrivateRouteTable, PrivateSubnet1]
     Properties:
       RouteTableId: !Ref PrivateRouteTable
       SubnetId: !Ref PrivateSubnet1
 
   WebSecurityGroup:
     Type: AWS::EC2::SecurityGroup
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
       GroupName: WebSecurityGroup
@@ -181,6 +200,7 @@ Resources:
 
   SecurityGroupForDb: 
     Type: AWS::EC2::SecurityGroup
+    DependsOn: CustomVpc
     Properties:
       VpcId: !Ref CustomVpc
       GroupName: SecurityGroupForPostgreSQL
@@ -194,15 +214,18 @@ Resources:
 
   DBSecurityGroup:
     Type: AWS::RDS::DBSecurityGroup
+    DependsOn: [CustomVpc, SecurityGroupForDb]
     Properties:
       EC2VpcId: !Ref CustomVpc
       GroupDescription: Allow access on port 5432 for PosgreSQL
       DBSecurityGroupIngress:
         - EC2SecurityGroupId: !Ref SecurityGroupForDb
-          CIDRIP: 10.0.0.0/16
+          # EC2SecurityGroupOwnerId: 
+          # CIDRIP: 10.0.0.0/16
   
   Database: 
     Type: AWS::RDS::DBInstance
+    DependsOn: [DBSecurityGroup, DBSubnetGroup]
     Properties: 
       AllocatedStorage: 20 
       MaxAllocatedStorage: 30 
@@ -212,18 +235,43 @@ Resources:
       MasterUsername: !Ref DbUser
       MasterUserPassword: !Ref DbPass 
       DBInstanceClass: !FindInMap [Environment, !Ref Env, dbClass]
-      BackupRetentionPeriod: 1
+      BackupRetentionPeriod: 0
       DBSecurityGroups: [!Ref DBSecurityGroup]
       VPCSecurityGroups: []
-      DBSubnetGroupName: !GetAtt DBSubnetGroup.Name
-      DeleteAutomatedBackups: true
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DeleteAutomatedBackups: false
       DeletionProtection: false
       Engine: "postgres"
       Tags:
         - Key: Name
           Value: !Join 
             - ""
-            - - Plus1Temp = {
+            - - Plus1Temp
               - !FindInMap [Environment, !Ref Env, surfix]
               - DbInstance
-      
+  
+  # EC2KeyPair:
+  #   Type: AWS::EC2::KeyPair
+  #   Properties: 
+  #     KeyName: !Join 
+  #       - ""
+  #       - - Plus1Temp
+  #         - !FindInMap [Environment, !Ref Env, surfix]
+  #         - Key
+  #     KeyType: rsa
+  #     Tags: 
+  #       - Key: Name 
+  #         Value: !Join 
+  #           - ""
+  #           - - Plus1Temp
+  #             - !FindInMap [Environment, !Ref Env, surfix]
+  #             - Key
+  # Server: 
+  #   Type: AWS::EC2::Instance 
+  #   DependsOn: EC2KeyPair 
+  #   Properties: 
+  #     ImageId: !FindInMap [RegionToAMI, !Ref Region, AMI]
+  #     InstanceType: !FindInMap [Environment, !Ref Env, instanceType]
+  #     KeyName: !Ref EC2KeyPair
+  #     Monitoring: true
+  #     NetworkInterfaces: []
