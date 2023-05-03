@@ -2,6 +2,7 @@
 [MediaConvert](https://docs.aws.amazon.com/mediaconvert/index.html)   
 [User Guide](https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html)    
 [API Reference](https://docs.aws.amazon.com/mediaconvert/latest/apireference/custom-endpoints.html)   
+[Pricing](https://aws.amazon.com/mediaconvert/pricing/)   
 
 ## Introduction  
 AWS Elemental MediaConvert is a file-based video transcoding service with broadcast-grade features. Create live stream content for broadcast and multi-screen delivery at scale.
@@ -31,16 +32,17 @@ $ aws s3 mb s3://tochukwu-media-convert-output
 2. __DRM encryption__  
 Optionally you can encrypt your content using DRM encryption to protect your content from unauthorized.  
 3. __Upload files for transcoding__   
-Copy a video input file to the input s3 bucket.
+Copy a video input file(s) to the input s3 bucket.
 ```
 $ aws s3 cp Robin-Thicke_Blurred-Lines.mp4 s3://tochukwu-media-convert-input
+$ aws s3 cp Outkast_Hey-Ya.mp4 s3://tochukwu-media-convert-input
 ```
 MediaConvert may also accept an HTTP(S) endpoint as the file input source instead of an S3 path.  
 See [supported input type](https://docs.aws.amazon.com/mediaconvert/latest/ug/reference-codecs-containers-input.html)  
 
 4. __Set up IAM permissions__   
 An IAM service role is needed to allow MediaConvert access to your resources, such as your input files and the locations where your output files are stored.   
-First create a role with a defined trust policy. A trust policy specifies which IAM entities (accounts, users, roles, services) can assume the role.  
+First create a role with a defined trust policy.
 ```
 $ aws iam create-role --role-name MediaConvertS3Role --assume-role-policy-document file://trust-policy.json
 ```
@@ -50,11 +52,7 @@ $ aws iam put-role-policy --role-name MediaConvertS3Role --policy-name S3ReadWri
 # Check the policies attached to the role
 $ aws iam list-role-policies --role-name MediaConvertS3Role
 ```
-Inline policies have a one-to-one relationship with the Principal (role, user or group). This means that if we delete the IAM role, the inline policy also gets deleted.
+Inline policies have a one-to-one relationship with the Principal (role, user or group).
 
-
-__Resources__  
-[Create a Role with AWS CLI - Complete Guide](https://bobbyhadz.com/blog/aws-cli-create-role)    
-[AWS IAM Policies with Examples](https://medium.com/tensult/aws-policies-with-examples-8340661d35e9)   
-[AWS IAM Policies : Creating an IAM Policy & Best Practices](https://spacelift.io/blog/iam-policy)   
-[List of AWS Service Principals](https://gist.github.com/shortjared/4c1e3fe52bdfa47522cfe5b41e5d6f22)   
+5. __Create a Job__  
+A job does the work of transcoding.
