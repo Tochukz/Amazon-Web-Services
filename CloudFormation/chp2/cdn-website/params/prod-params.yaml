@@ -1,0 +1,4 @@
+Parameters:
+  Env: prod
+  DomainNames: "app.tochukwu.click,www.tochukwu.click"
+  CertificateArn: ""

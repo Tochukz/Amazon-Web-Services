@@ -1,0 +1,4 @@
+Parameters:
+  Env: staging
+  DomainNames: "app-staging.tochukwu.click"
+  CertificateArn: ""

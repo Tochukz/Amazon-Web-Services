@@ -1,0 +1,4 @@
+Parameters:
+  Env: dev
+  DomainNames: "app-dev.tochukwu.click"
+  CertificateArn: ""
