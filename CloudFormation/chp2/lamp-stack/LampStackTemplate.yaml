@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'Template for Lamp stack. This support PHP applications like Laravel or Symphony'
+
+Parameters: 
+  KeyName: 
+    Description: 'EC2 Keypair name'
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: AmzLinuxKey2
+  ServerPort:
+    Description: 'Port number for the web server'
+    Type: Number 
+    MinValue: 1
+    MaxValue: 65535
+    Default: 80
+  DBName: 
+    Description: 'The name for the RDS MySQL database instance'
+    Type: String
+    MinLength: 6
+    MaxLength: 10
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  DBUsername: 
+    Description: 'Username for the RDS MySQL database instance'
+    Type: String
+    MinLength: 6
+    MaxLenght: 10
+    AllowedPattern: '[a-zA-Z0-9]*'
+  DBPassword: 
+    Description: 'Password for the RDS MySQL database instance'
+    Type: String
+    MinLength: 6
+    MaxLength: 40
+    NoEcho: true
+
+Mappings: 
+  RegionMap: 
+    eu-west-1: 
+      AMI: ami-xxxxx
+    eu-west-2: 
+      AMI: ami-xxxxx
+    eu-west-3: 
+      AMI: ami-xxxxx
+    
+Resources: 
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: 'Security group for browser access and SSH access',
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: !Ref ServerPort
+        ToPort: !Ref ServerPort 
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22 
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  WebServer: 
+    Type: AWS::ECS::Instance
+    Properties: 
+      InstanceType: 't2.micro'
+      KeyName: !Ref KeyName 
+      ImageId: !FindInMap 
+      - RegionMap
+      - !Ref 'AWS::Region' 
+      - AMI
+      SecurityGroups: 
+      - !Ref WebSecurityGroup
+  WebDatabase: 
+    Type: AWS::RDS::DBInstance
+    Properties: 
+      InstanceType: 't3.micro' 
+      DatabaseName: !Ref DBName
+      DatabaseUsername: !Ref DBUsername
+      DatabasePassword: !Ref DBPassword
+      DeletionPolicy: Remove
+
+
+Outputs: 
+  DnsName: 
+    Value: !GetAtt WebSecurityGroup.PublicDnsName 
+    Description: 'DNS name for the EC2 instance'
+  PublicIp: 
+    Value: !GetAtt WebSecurityGroup.PublicIpAddress
+    Description: 'PublicIP address for the EC2 instance'
+  DBHost: 
+    Value: !GetAtt WebDatabase.Endpoint
+    Description: 'Endpoint for the RDS MySQL instance'

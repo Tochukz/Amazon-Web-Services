@@ -69,6 +69,6 @@ First enable billing alert
 4. Click the _Save Preferences_ button.
 Next create the billing alarm
 ```bash
-# Not tested yet, need mmore work
+# Not tested yet, need more work
 $ aws cloudwatch put-metric-alarm --alarm-name BillingMonitoring --evaluation-periods 6 --comparison-operator GreaterThanOrEqualToThreshold --alarm-description "Alert at $20 billing" --metric-name Billing --namespace AWS/EC2 --statistic Maximum --period 300 --threshold 70 --dimensions Name=InstanceId,Value=i-0b54650d361f9ca84 --alarm-actions arn:aws:sns:eu-west-2:966727776968:MonitoringTopic --unit Percent
 ```
