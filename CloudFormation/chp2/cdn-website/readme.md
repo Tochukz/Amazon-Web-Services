@@ -26,19 +26,19 @@ For example the _CertificateArn_ of the _dev-params.yaml_ file must have a value
 
 ## Deployment
 
-**Deploy to development environement**
+**Deploy to development environment**
 
 ```
 $ rain deploy SPATemplate.yaml SPAFrontendDevStack --config params/dev-params.yaml
 ```
 
-**Deploy to staging environement**
+**Deploy to staging environment**
 
 ```
 $ rain deploy SPATemplate.yaml SPAFrontendStagingStack --config params/staging-params.yaml
 ```
 
-**Deploy to production environement**
+**Deploy to production environment**
 
 ```
 $ rain deploy SPATemplate.yaml SPAFrontendProdStack --config params/prod-params.yaml
