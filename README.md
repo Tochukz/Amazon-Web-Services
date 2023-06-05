@@ -16,3 +16,10 @@ __Useful links__
 [Amazon S3 Cookbook](https://github.com/Tochukz/Amazon-S3-Cookbook)  
 [Amazon ECS](https://github.com/Tochukz/Amazon-ECS)   
 [Amazon CDK](https://github.com/Tochukz/Amazon-CDK)
+
+
+//@todo: Remove later
+[10:57, 02/06/2023] Tochukz: https://aws.amazon.com/solutions/
+[14:29, 02/06/2023] Tochukz: https://aaronstuyvenberg.com/posts/monolambda-vs-individual-function-api
+[14:29, 02/06/2023] Tochukz: https://docs.aws.amazon.com/lambda/latest/operatorguide/monolith.html
+[14:29, 02/06/2023] Tochukz: https://medium.com/aws-serverless-microservices-with-patterns-best/decompose-lambda-functions-monolithic-microservices-vs-single-purposed-functions-f4b87465cb36
