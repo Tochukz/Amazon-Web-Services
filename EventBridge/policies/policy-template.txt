@@ -1,0 +1,65 @@
+
+  ### Choose which sections to   include in the policy to match your use case. Be sure to remove all lines that start with ###, including the ### at the end of the line. ###
+
+  ### The policy must include the following: ###
+
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+
+      ### To grant permissions for an account to use the PutEvents action, include the following, otherwise delete this section: ###
+
+      {
+
+        "Sid": "AllowAccountToPutEvents",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "<ACCOUNT_ID>"
+        },
+        "Action": "events:PutEvents",
+        "Resource": "arn:aws:events:eu-west-2:966727776968:event-bus/VideoPlatformBus"
+      },
+
+      ### Include the following section to grant permissions to all members of your AWS Organization to use the PutEvents action ###
+
+      {
+        "Sid": "AllowAllAccountsFromOrganizationToPutEvents",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "events:PutEvents",
+        "Resource": "arn:aws:events:eu-west-2:966727776968:event-bus/VideoPlatformBus",
+        "Condition": {
+          "StringEquals": {
+            "aws:PrincipalOrgID": "o-hokhbhz4hn"
+          }
+        }
+      },
+
+      ### Include the following section to grant permissions to the account to manage the rules created in the account ###
+
+      {
+        "Sid": "AllowAccountToManageRulesTheyCreated",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "<ACCOUNT_ID>"
+        },
+        "Action": [
+          "events:PutRule",
+          "events:PutTargets",
+          "events:DeleteRule",
+          "events:RemoveTargets",
+          "events:DisableRule",
+          "events:EnableRule",
+          "events:TagResource",
+          "events:UntagResource",
+          "events:DescribeRule",
+          "events:ListTargetsByRule",
+          "events:ListTagsForResource"],
+        "Resource": "arn:aws:events:eu-west-2:966727776968:rule/VideoPlatformBus",
+        "Condition": {
+          "StringEqualsIfExists": {
+            "events:creatorAccount": "<ACCOUNT_ID>"
+          }
+        }
+    }]
+  }

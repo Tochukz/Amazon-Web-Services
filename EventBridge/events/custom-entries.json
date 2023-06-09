@@ -1,0 +1,8 @@
+[
+  {
+    "Source": "xyz.tochukwu.store",
+    "EventBusName": "VideoPlatformBus",
+    "DetailType": "book order",
+    "Detail": "{\"orderId\":\"001\",\"type\":\"Book order\",\"description\":\"Order for book(s)\"}"
+  }
+]

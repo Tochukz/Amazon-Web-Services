@@ -1,0 +1,17 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Effect": "Allow",
+            "Principal": {
+                "Service": ["events.amazonaws.com", "delivery.logs.amazonaws.com"]
+            },
+            "Resource": "arn:aws:logs:region:account:log-group:/aws/events/*:*",
+            "Sid": "TrustEventsToStoreLogEvent"
+        }
+    ],
+    "Version": "2012-10-17"
+}
