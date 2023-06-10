@@ -121,6 +121,11 @@ $ aws ec2 run-instances --image-id ami-02fb3e77af3bea031 --count 1 \
 ```  
 For now, only the _SNS topic_ target receives the event. This can be seen in the email is is subscribed to the SNS topic.   
 
+To trigger the EC2 events again, try stopping the EC2 instance
+```
+$ aws ec2 stop-instances --instance-ids i-014ff1735ee24a3a1
+```  
+
 __Cleanup__   
 Remove a target
 ```
@@ -137,26 +142,36 @@ __Create your custom event bus__
 $ aws events create-event-bus --name VideoPlatformBus
 $ aws events list-event-buses
 ```
+
 __Create rule__  
 Create a rules on your custom event bus
 ```
 $ aws events put-rule --name BookOrdered --description 'Book order event pattern' --event-bus-name VideoPlatformBus --event-pattern file://rules/custom-pattern.json
 ```
 
-__Setup log groups__  
-Create log group to you later as an event target
+__CloudWatch Log groups target__   
+Use cloudwatch log group as an event target
 ```bash
 # Create log-group to be used for custom event-bust
 $ aws logs create-log-group --log-group-name video-platform-event-logs  
+# Get the log-group ARN
 $ aws logs describe-log-groups --log-group-name-prefix video-platform-event-logs
+# Assign the LogGroup as target for the custom event bus
+$ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets 'Id=2,Arn=arn:aws:logs:eu-west-2:966727776968:log-group:video-platform-event-logs:*'
 ```
 
-__Assign targets to the rule__  
+__SNS topic target__   
 ```bash
-# Put SNS topic target for custom event bus
+# Create SNS topic
+$ aws sns create-topic --name shopping-orders-topic
+# Subscribe to the topic. And verify the subscription in you email
+$ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --protocol email --notification-endpoint truetochukz@gmail.com
+# Assign the SNS topic as target for custom event bus
 $ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets "Id"="1","Arn"="arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic"
-# Put log group target for custom event bus
-$ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets 'Id=2,Arn=arn:aws:logs:eu-west-2:966727776968:log-group:video-platform-event-logs:*'
+```
+
+__Show all targets__   
+```bash
 # Show all targets associated with the rule in the custom event bus
 $ aws events list-targets-by-rule --rule BookOrdered --event-bus VideoPlatformBus    
 ```  
@@ -193,4 +208,19 @@ $ aws events remove-targets --event-bus VideoPlatformBus --rule BookOrdered2 --i
 Remove rule
 ```
 $ aws events delete-rule --name BookOrdered2 --event-bus VideoPlatformBus
+```
+
+### Assigning Permission
+__To validate a policy document__   
+```
+$ aws accessanalyzer validate-policy --policy-type RESOURCE_POLICY --policy-document file://policies/events-trust-policy.json  
+```  
+
+```bash
+# Create a role with a trust policy
+$ aws iam create-role --role-name EventsPublishSNSRole --assume-role-policy-document file://policies/events-trust-policy.json
+# Attach a policy to the role
+$ aws iam put-role-policy --role-name EventsPublishSNSRole --policy-name AllowSNSTopicPublish --policy-document file://policies/sns-permission.json
+# List the policies attached to the role
+$ aws iam list-role-policies --role-name EventsPublishSNSRole
 ```
