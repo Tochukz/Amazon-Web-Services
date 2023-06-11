@@ -74,6 +74,7 @@ __Lambda Function target__
 ```bash
 # Assign an existing Lambda function as a target
 $ aws events put-targets --rule EC2InstanceStateChange --targets "Id"="1","Arn"="arn:aws:lambda:eu-west-2:966727776968:function:hello-world"
+# @todo: configure permission to allow event bridge to send events to the Lambda function
 ```  
 
 __SNS Topic target__  
@@ -85,6 +86,7 @@ $ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:MonitoringTop
 # Assign the SNS topic as an event target
 $ aws events put-targets --rule EC2InstanceStateChange --targets "Id"="2","Arn"="arn:aws:sns:eu-west-2:966727776968:MonitoringTopic"
 # Attach IAM policy to the topic to allow EventBridge to send notification to the topic
+# @todo: configure permission to allow event bridge to send events to the SNS topic
 ```  
 
 __CloudWatch LogGroup target__  
@@ -94,6 +96,7 @@ Here we use a CloudWatch Log group for an event target.
 $ aws logs create-log-group --log-group-name test-default-events-logs
 # Assign the log group as a target
 $ aws events put-targets --rule EC2InstanceStateChange --targets "Id"="3","Arn"="arn:aws:logs:eu-west-2:966727776968:log-group:test-default-events-logs:*"
+# @todo: configure permission to allow event bridge to send events to the LogGroup  
 ```
 
 __All assigned targets__   
@@ -150,14 +153,16 @@ $ aws events put-rule --name BookOrdered --description 'Book order event pattern
 ```
 
 __CloudWatch Log groups target__   
-Use cloudwatch log group as an event target
+Use CloudWatch LogGroup as an event target
 ```bash
-# Create log-group to be used for custom event-bust
+# Create LogGroup to be used for custom event-bus
 $ aws logs create-log-group --log-group-name video-platform-event-logs  
-# Get the log-group ARN
+# Get the LogGroup ARN
 $ aws logs describe-log-groups --log-group-name-prefix video-platform-event-logs
 # Assign the LogGroup as target for the custom event bus
 $ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets 'Id=2,Arn=arn:aws:logs:eu-west-2:966727776968:log-group:video-platform-event-logs:*'
+# Add resource policy to the LogGroup to allow the event bus to send events to it
+$ aws logs put-resource-policy --policy-name OrdersEventLogPolicy --policy-document file://policies/book-log-policy.json
 ```
 
 __SNS topic target__   
@@ -165,9 +170,11 @@ __SNS topic target__
 # Create SNS topic
 $ aws sns create-topic --name shopping-orders-topic
 # Subscribe to the topic. And verify the subscription in you email
-$ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --protocol email --notification-endpoint truetochukz@gmail.com
+$ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --protocol email --notification-endpoint bbdchucks@gmail.com
 # Assign the SNS topic as target for custom event bus
-$ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets "Id"="1","Arn"="arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic"
+$ aws events put-targets --rule BookOrdered --event-bus VideoPlatformBus --targets "Id=1,Arn=arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic"
+# Attach IAM policy to allow EventBridge to send events to the SNS topic
+$ aws sns set-topic-attributes --topic-arn arn:aws:sns:eu-west-2:966727776968:shopping-orders-topic --attribute-name Policy --attribute-value file://policies/order-sns-am-policy.json
 ```
 
 __Show all targets__   
@@ -199,6 +206,8 @@ To test custom event bus, we emit a custom event
 ```
 $ aws events put-events --entries file://events/custom-entries.json
 ```
+A copy of the custom event sent by the custom event bus to the SNS topic can be found in the email addresses subscribed to the topic. See _events/custom-event-email-copy.json_.  
+Similarly, a copy of the event sent to the LogGroup is seen in _events/custom-event-log-copy.json_.   
 
 __Clean up__  
 Remove event target
@@ -216,11 +225,6 @@ __To validate a policy document__
 $ aws accessanalyzer validate-policy --policy-type RESOURCE_POLICY --policy-document file://policies/events-trust-policy.json  
 ```  
 
-```bash
-# Create a role with a trust policy
-$ aws iam create-role --role-name EventsPublishSNSRole --assume-role-policy-document file://policies/events-trust-policy.json
-# Attach a policy to the role
-$ aws iam put-role-policy --role-name EventsPublishSNSRole --policy-name AllowSNSTopicPublish --policy-document file://policies/sns-permission.json
-# List the policies attached to the role
-$ aws iam list-role-policies --role-name EventsPublishSNSRole
-```
+
+__Resources__  
+https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-s3-object-created-tutorial.html

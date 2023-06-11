@@ -1,0 +1,15 @@
+{
+  "version": "0",
+  "id": "0a6026e5-b3d3-9062-4998-b08e26454c19",
+  "detail-type": "book order",
+  "source": "xyz.tochukwu.store",
+  "account": "966727776968",
+  "time": "2023-06-11T20:57:40Z",
+  "region": "eu-west-2",
+  "resources": [],
+  "detail": {
+    "orderId": "001",
+    "type": "Book order",
+    "description": "Order for book(s)"
+  }
+}
