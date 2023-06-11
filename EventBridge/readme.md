@@ -43,7 +43,6 @@ For other AWS services not listed in the _service-event-list_, you can receive e
 CloudTrail records events such as API calls and your can create rules that use the information recorded by CloudTrail.  
 Events that are delivered by CloudTrail have `AWS API Call via CloudTrail` as the value for `detail-type`.   
 
-
 ### Working with default event bus
 __Writing a rule__  
 It is possible to create rules that lead to infinite loops, where a rule is fired repeatedly.
@@ -85,6 +84,7 @@ $ aws sns create-topic --name MonitoringTopic
 $ aws sns subscribe --topic-arn arn:aws:sns:eu-west-2:966727776968:MonitoringTopic --protocol email --notification-endpoint bbdchucks@gmail.com
 # Assign the SNS topic as an event target
 $ aws events put-targets --rule EC2InstanceStateChange --targets "Id"="2","Arn"="arn:aws:sns:eu-west-2:966727776968:MonitoringTopic"
+# Attach IAM policy to the topic to allow EventBridge to send notification to the topic
 ```  
 
 __CloudWatch LogGroup target__  
