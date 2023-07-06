@@ -7,6 +7,8 @@ __Resources__
 [AWS JavaScript SDK](https://aws.amazon.com/sdk-for-javascript/)   
 [JavaScript SDK Developer Guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/welcome.html)  
 [AWS JavaScript SDK API Reference Guide](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/index.html)   
+[AWS Samples](https://github.com/aws-samples)   
+[AWS Solutions](https://github.com/aws-solutions/)  
 
 __Useful links__   
 [AWS Certified Solutions Architech-2017](https://github.com/Tochukz/Amazon-Web-Services/tree/master/AWS-Certified-Solutions-Architech-2017)  
