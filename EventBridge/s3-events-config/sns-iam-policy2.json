@@ -1,0 +1,17 @@
+{
+    "Version": "2008-10-17",
+    "Id": "example-ID",
+    "Statement": [
+        {
+            "Sid": "SNS_IAM_Policy_2",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "events.amazonaws.com"
+            },
+            "Action": [
+                "SNS:Publish"
+            ],
+            "Resource": "arn:aws:sns:eu-west-2:966727776968:EventsBridgeTargetTopic"            
+        }
+    ]
+}

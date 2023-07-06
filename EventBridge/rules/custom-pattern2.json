@@ -1,0 +1,7 @@
+{
+  "Source": ["xyz.tochukwu.store"],
+  "DetailType": ["book order"],
+  "Detail": {
+    "type": ["Book order"]
+  }
+}

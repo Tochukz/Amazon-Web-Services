@@ -1,5 +1,6 @@
 # Video on Demand on AWS Foundation
-[Implementation Docs](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/solution-overview.html)
+[Implementation Docs](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/solution-overview.html)  
+[Source Code](https://github.com/aws-solutions/video-on-demand-on-aws)  
 
 ## Solution Overview
 ### Required AWS Service components

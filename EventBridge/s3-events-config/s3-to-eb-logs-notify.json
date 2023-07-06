@@ -1,0 +1,29 @@
+{
+    "version": "0",
+    "id": "8f4c408a-8c5a-6dd1-91b3-32053513af0b",
+    "detail-type": "Object Created",
+    "source": "aws.s3",
+    "account": "966727776968",
+    "time": "2023-06-11T09:18:46Z",
+    "region": "eu-west-2",
+    "resources": [
+        "arn:aws:s3:::tochukwu1-bucket"
+    ],
+    "detail": {
+        "version": "0",
+        "bucket": {
+            "name": "tochukwu1-bucket"
+        },
+        "object": {
+            "key": "hello-s3.txt",
+            "size": 72,
+            "etag": "0ecd9dc8116d96d8d85e608c060b0447",
+            "version-id": "yuOh9zWjw1YFjX4JgsFATlLDqAV6tz2l",
+            "sequencer": "00648591763E77A43D"
+        },
+        "request-id": "GDYZSDCVS0A11VK8",
+        "requester": "966727776968",
+        "source-ip-address": "41.119.138.33",
+        "reason": "PutObject"
+    }
+}

@@ -1,0 +1,118 @@
+{
+    "Groups": [],
+    "Instances": [
+        {
+            "AmiLaunchIndex": 0,
+            "ImageId": "ami-02fb3e77af3bea031",
+            "InstanceId": "i-014ff1735ee24a3a1",
+            "InstanceType": "t2.nano",
+            "KeyName": "AmzLinuxKey2",
+            "LaunchTime": "2023-06-09T00:15:38+00:00",
+            "Monitoring": {
+                "State": "disabled"
+            },
+            "Placement": {
+                "AvailabilityZone": "eu-west-2b",
+                "GroupName": "",
+                "Tenancy": "default"
+            },
+            "PrivateDnsName": "ip-172-31-41-12.eu-west-2.compute.internal",
+            "PrivateIpAddress": "172.31.41.12",
+            "ProductCodes": [],
+            "PublicDnsName": "",
+            "State": {
+                "Code": 0,
+                "Name": "pending"
+            },
+            "StateTransitionReason": "",
+            "SubnetId": "subnet-0dfa1925f4155b859",
+            "VpcId": "vpc-0e584b372fcc4236a",
+            "Architecture": "x86_64",
+            "BlockDeviceMappings": [],
+            "ClientToken": "e15e6f3d-5d1f-4325-b25f-75903b38b11b",
+            "EbsOptimized": false,
+            "EnaSupport": true,
+            "Hypervisor": "xen",
+            "NetworkInterfaces": [
+                {
+                    "Attachment": {
+                        "AttachTime": "2023-06-09T00:15:38+00:00",
+                        "AttachmentId": "eni-attach-0834dfdc06e572b53",
+                        "DeleteOnTermination": true,
+                        "DeviceIndex": 0,
+                        "Status": "attaching",
+                        "NetworkCardIndex": 0
+                    },
+                    "Description": "",
+                    "Groups": [
+                        {
+                            "GroupName": "LinuxGroup",
+                            "GroupId": "sg-097302308e8550121"
+                        }
+                    ],
+                    "Ipv6Addresses": [],
+                    "MacAddress": "0a:07:dd:11:44:62",
+                    "NetworkInterfaceId": "eni-033463434378d4ed3",
+                    "OwnerId": "966727776968",
+                    "PrivateDnsName": "ip-172-31-41-12.eu-west-2.compute.internal",
+                    "PrivateIpAddress": "172.31.41.12",
+                    "PrivateIpAddresses": [
+                        {
+                            "Primary": true,
+                            "PrivateDnsName": "ip-172-31-41-12.eu-west-2.compute.internal",
+                            "PrivateIpAddress": "172.31.41.12"
+                        }
+                    ],
+                    "SourceDestCheck": true,
+                    "Status": "in-use",
+                    "SubnetId": "subnet-0dfa1925f4155b859",
+                    "VpcId": "vpc-0e584b372fcc4236a",
+                    "InterfaceType": "interface"
+                }
+            ],
+            "RootDeviceName": "/dev/xvda",
+            "RootDeviceType": "ebs",
+            "SecurityGroups": [
+                {
+                    "GroupName": "LinuxGroup",
+                    "GroupId": "sg-097302308e8550121"
+                }
+            ],
+            "SourceDestCheck": true,
+            "StateReason": {
+                "Code": "pending",
+                "Message": "pending"
+            },
+            "VirtualizationType": "hvm",
+            "CpuOptions": {
+                "CoreCount": 1,
+                "ThreadsPerCore": 1
+            },
+            "CapacityReservationSpecification": {
+                "CapacityReservationPreference": "open"
+            },
+            "MetadataOptions": {
+                "State": "pending",
+                "HttpTokens": "required",
+                "HttpPutResponseHopLimit": 2,
+                "HttpEndpoint": "enabled",
+                "HttpProtocolIpv6": "disabled",
+                "InstanceMetadataTags": "disabled"
+            },
+            "EnclaveOptions": {
+                "Enabled": false
+            },
+            "BootMode": "uefi-preferred",
+            "PrivateDnsNameOptions": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            },
+            "MaintenanceOptions": {
+                "AutoRecovery": "default"
+            }
+        }
+    ],
+    "OwnerId": "966727776968",
+    "ReservationId": "r-029407d94b69377ee"
+}

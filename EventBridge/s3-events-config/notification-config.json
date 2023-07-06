@@ -1,0 +1,11 @@
+{
+  "TopicConfigurations": [
+    {
+      "TopicArn": "arn:aws:sns:eu-west-2:966727776968:S3Tochukwu1BucketEventsTopic",
+      "Events": ["s3:ObjectCreated:*"]
+    }
+  ],
+  "QueueConfigurations": [],
+  "LambdaFunctionConfigurations": [],
+  "EventBridgeConfiguration": {}
+}

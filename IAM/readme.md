@@ -15,7 +15,7 @@ You manage access in AWS by creating policies and attaching them to IAM identiti
 AWS evaluates these policies when a principal uses an IAM entity (user or role) to make a request.
 
 __Policy and users__   
-IAM users are identities in the service. When you create an IAM user, they can't access anything in your account until you give them permission. You give permissions to a user by creating an identity-based policy, which is a policy that is attached to the user or a group to which the user belongs.  
+IAM users are identities in the service. When you create an IAM user, they can't access anything in your account until you give them permission. You give permissions to a user by creating an _identity-based policy_, which is a policy that is attached to the user or a group to which the user belongs.  
 ```
 {
   "Version": "2012-10-17",
@@ -26,7 +26,7 @@ IAM users are identities in the service. When you create an IAM user, they can't
   }
 }
 ```
-The above JSON policy that allows the user to perform all Amazon DynamoDB actions _(dynamodb:*)_ on the Books table in the 123456789012 account within the us-east-2 Region.  
+The above JSON policy allows the user to perform all Amazon DynamoDB actions _(dynamodb:*)_ on the Books table in the 123456789012 account within the us-east-2 Region.  
 
 __Federated users and roles__  
 Federated users don't have permanent identities in your AWS account the way that IAM users do. To assign permissions to federated users, you can create an entity referred to as a role and define permissions for the role. When a federated user signs in to AWS, the user is associated with the role and is granted the permissions that are defined in the role.  
@@ -75,12 +75,10 @@ __To delete user__
 $ aws iam delete-user --user-name jacob
 ```
 
-
 __To delete policy__  
 ```
 $ aws iam delete-policy --policy-arn arn:aws:iam::966727776968:policy/UsersReadOnlyAccessToIAMConsole
 ```
-
 
 __Set up IAM permissions__   
 An IAM service role is needed to allow other AWS services access to your resources, such as your input an S3 bucket for example or an RDS instance.   

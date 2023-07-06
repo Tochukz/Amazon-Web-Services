@@ -1,0 +1,14 @@
+{
+  "id": "01",
+  "source": "xyz.tochukwu.store",
+  "account": "123456789012",
+  "time": "2015-11-11T21:31:47Z",
+  "region": "eu-west-1",
+  "EventBusName": "VideoPlatformBus",
+  "detail-type": "book order",
+  "detail": {
+    "orderId":"001",
+    "type":"Book order",
+    "description":"Order for book(s)"
+  }
+}
