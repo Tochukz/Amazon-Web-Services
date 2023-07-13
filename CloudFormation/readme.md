@@ -270,6 +270,24 @@ __Basic WebServer with CloudFormation Designer__
 9. Use GatewayId to create a connection from the PublicRoute resource to the Internet gateway
 10.  Create an explicit dependency between the _PublicRoute_ resource and the _VpcGatewayAttachment_.
 11. Connect the _PublicRouteTable_  to the _PublicSubnet_ to associate the route table and subnet.
+#### Learn More
+##### CFN Nag
+The _cfn-nag_ tool looks for patterns in CloudFormation templates that may indicate insecure infrastructure.
+__Install cfn-nag__
+```bash
+# Install gem if you don't already have it installed
+$ brew install ruby brew-gem
+$ gem install cfn-nag
+```
+You may need to use _sudo_ if you encounter any permission issues will install _cfn-ng_ with gem.  
+
+__Run cfn scan__  
+Run _cfn scan_ against your cloudformation template
+```
+$  cfn_nag_scan --input-path  SPATemplate.yaml
+```
+
+[cfn-nag Github](https://github.com/stelligent/cfn_nag)
 
 #### Common Commands
 __CLI: aws cloudformation__  
