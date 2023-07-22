@@ -306,13 +306,14 @@ Show events log     | `rain logs StaticWebsiteTemplate`
 #### Resources Reference
 Resource  | Reference
 ----------|------------
-S3        | [AWS::S3](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3.html)  
+DynamoDB  | [AWS::DynamoDB](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DynamoDB.html)
 EC2       | [AWS::EC2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EC2.html)
+EC2 Instance | [AWS::EC2::Instance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html)  
+EC2 VPC   | [AWS::EC2::VPC](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html)
 ECS       | [AWS::ECS](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ECS.html)  
 ECR       | [AWS::ECR](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ECR.html)
 Lambda    | [AWS::Lambda](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Lambda.html)
-EC2 Instance | [AWS::EC2::Instance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html)  
+S3        | [AWS::S3](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3.html)  
 S3 Bucket | [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html)
-EC2 VPC   | [AWS::EC2::VPC](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html)
 
 [How do I resolve template validation or template format errors in CloudFormation?](https://aws.amazon.com/premiumsupport/knowledge-center/cloudformation-template-validation/)  
