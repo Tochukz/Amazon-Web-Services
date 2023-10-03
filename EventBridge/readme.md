@@ -25,10 +25,11 @@ __NB:__ Amazon EventBridge was formerly called Amazon CloudWatch Events.
 
 ### Getting Started  
 The basics of EventBridge is to create rules that route events to a target.  
-__Event bus__  
-Every AWS account has one default event bus. This default event bus received all the events from AWS services.  
 
-__Custom event bus__
+__Event bus__  
+Every AWS account has one default event bus. This default event bus receives all the events from AWS services.  
+
+__Custom event bus__  
 You can create you own custom event bus which you can use to receive events from your custom applications and services
 ```
 $ aws events create-event-bus --name MyEventBus
@@ -39,7 +40,7 @@ When you create an event bus, you can attach a _resource-based policy_ to grant 
 For list of services that generate event see [service-event-list](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-service-event-list.html).  
 
 __AWS Cloud Trail__  
-For other AWS services not listed in the _service-event-list_, you can receive events from them via _CloudTrail_.  
+For other AWS services not listed in the _service-event-list_, you can receive events from them via _CloudTrail_.   
 CloudTrail records events such as API calls and your can create rules that use the information recorded by CloudTrail.  
 Events that are delivered by CloudTrail have `AWS API Call via CloudTrail` as the value for `detail-type`.   
 
