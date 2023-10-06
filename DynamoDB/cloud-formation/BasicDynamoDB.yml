@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'This template provisions a simple DynamoDB table'
+
+Parameters:
+  TableName:
+    Description: The name of the DynamoDB table
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]'
+    ConstraintDescription: Table name must be only alphanumeric characters
+  BillingOption:
+    Description: Billing mode for the table 
+    Type: String
+    AllowedValues:
+      - provisioned
+      - ondemand
+    ConstraintDescription: Billing should be provisioned or ondemand
+
+Mappings: 
+  BillingOptions:
+    provisioned: 
+      Value: PROVISIONED
+    ondemand: 
+      Value: PAY_PER_REQUEST
+
+Resources:
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: !Ref TableName
+      AttributeDefinitions: 
+        - AttributeName: UserId
+          AttributeType: "N"
+        - AttributeName: Email
+          AttributeType: "S"
+        - AttributeName: Firstname
+          AttributeType: "S"
+        - AttributeName: Lastname
+          AttributeType: "S"
+        - AttributeName: JobRole 
+          AttributeType: "S"
+        - AttributeName: Company
+          AttributeType: "S"
+
+      KeySchema: 
+        - AttributeName: "UserId"
+          KeyType: "HASH"
+        - AttributeName: "Email"
+          KeyType: "RANGE"      
+      BillingMode: !FindInMap [BillingOptions, !Ref BillingOption, Value]
+      GlobalSecondaryIndexes:
+        - IndexName: JobRoleIndex
+          KeySchema:
+            - AttributeName: JobRole
+              KeyType: "RANGE"
+          Projection: 
+            NonKeyAttributes: 
+              - Job 
+            ProjectionType: INCLUDE
+            
+      DeletionProtectionEnabled: false
