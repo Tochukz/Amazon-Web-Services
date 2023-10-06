@@ -1,5 +1,6 @@
 # AWS Elemental MediaConvert  
-[MediaConvert](https://docs.aws.amazon.com/mediaconvert/index.html)   
+[MediaConvert](https://aws.amazon.com/mediaconvert/)
+[MediaConvert Docs](https://docs.aws.amazon.com/mediaconvert/index.html)   
 [User Guide](https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html)    
 [API Reference](https://docs.aws.amazon.com/mediaconvert/latest/apireference/custom-endpoints.html)   
 [Pricing](https://aws.amazon.com/mediaconvert/pricing/)   
