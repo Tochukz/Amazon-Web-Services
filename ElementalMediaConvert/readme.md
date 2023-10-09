@@ -57,3 +57,11 @@ Inline policies have a one-to-one relationship with the Principal (role, user or
 
 5. __Create a Job__  
 A job does the work of transcoding.
+
+```bash
+$ aws mediaconvert create-job --role arn:aws:iam::572233009210:role/My_MediaConvert_Role --endpoint-url https://ey3xqwxpb.mediaconvert.eu-west-2.amazonaws.com  --settings file://cli-job-settings.json
+```
+Remember to update the values of `Inputs[*].FileInput` and `OutputGroups[*].FileGroupSettings.Destination` to your actual video source and destination values.  
+
+[Example AWS Elemental MediaConvert job settings in JSON](https://docs.aws.amazon.com/mediaconvert/latest/ug/example-job-settings.html#mp4-example)
+[AWS ElemenetalMediaConvert Jobs](https://github.com/aws-samples/aws-media-services-simple-vod-workflow/blob/master/2-MediaConvertJobs/README.md)
