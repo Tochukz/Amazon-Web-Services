@@ -141,7 +141,7 @@ $ rain deploy WordPressTemplate.yaml --config inputs/rain-create-params.yaml --r
 Rain shows you progress of the stack creation in real time and the output parameter values after the process is complete.  
 The stack name will be the name of the template file, _WordPressTemplate_ in this case.   
 
-__Update the stack__
+__Update the stack__  
 To demonstrate the update we can change the _InstanceType_ used from _t2.nano_ to _t2.micro_.
 We do this with the _stack-update-params.yaml_ file where the _InstanceType_ parameter has been changed to _t2.micro_.  
 1. Run the deploy command on the update stack template or paramters.  
@@ -204,14 +204,16 @@ AWS::ProductIdentifier::ResourceType
 For example, the resource type for an Amazon S3 bucket is `AWS::S3::Bucket`.  
 For a full list of resource types, see [Template reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-reference.html) or more specifically [Property types reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html).
 
-__Resource Properties__
+__Resource Properties__  
 Resource declarations use a _Properties_ attribute to specify the information used to create a resource.
 
 __Intrinsic functions__  
 AWS CloudFormation provides several built-in functions that help you manage your stacks. Use intrinsic functions in your templates to assign values to properties that are not available until runtime.   
-For example, you can use _Fn::Ref_ to reference a paramter, _Fn::GetAtt_ to get the property of a resource and _Fn::GetAZs_ to get the list of all availability zones in a region.
+For example, you can use
+* `Fn::Ref` to reference a paramter,
+* `Fn::GetAtt` to get the property of a resource and * `Fn::GetAZs` to get the list of all availability zones in a region.
 
-See [intrinsic function referenCe](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html)
+See [intrinsic function reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html)
 
 ### Parameters
 A parameter contains a list of attributes that define its value and constraints against its value. The only required attribute is Type, which can be String, Number, or an AWS-specific type.  
@@ -249,15 +251,16 @@ Resources can also have a meta data attribute.
 Learn more about [meta data attributes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html)
 
 __Notable to read__   
-[Walkthroughs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_Using.html)  
-[Deploying applications on Amazon EC2 with Amazon CloudFormation](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/deploying.applications.html#deployment-walkthrough-basic-server)  
-[Walkthrough: Create a scaled and load-balanced application](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/example-templates-autoscaling.html)   
-[Template Snippets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_TemplateQuickRef.html)   
-[Amazon S3 template snippets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-s3.html#scenario-s3-bucket-website)   
+* [Walkthroughs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_Using.html)  
+* [Deploying applications on Amazon EC2 with Amazon CloudFormation](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/deploying.applications.html#deployment-walkthrough-basic-server)  
+* [Walkthrough: Create a scaled and load-balanced application](https://docs.amazonaws.cn/en_us/AWSCloudFormation/latest/UserGuide/example-templates-autoscaling.html)   
+* [Template Snippets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/CHAP_TemplateQuickRef.html)   
+* [Amazon S3 template snippets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-s3.html#scenario-s3-bucket-website)   
 
 #### Working with templates  
 Open the CloudFormation console.and click on _Designer_.  
 Click the pen icon to edit and change the name of the template.  
+
 __Basic WebServer with CloudFormation Designer__  
 1. Add VPC, call it _VPC_
 2. Add a Subnet inside the VPC, call it _PublicSubnet_
@@ -270,9 +273,12 @@ __Basic WebServer with CloudFormation Designer__
 9. Use GatewayId to create a connection from the PublicRoute resource to the Internet gateway
 10.  Create an explicit dependency between the _PublicRoute_ resource and the _VpcGatewayAttachment_.
 11. Connect the _PublicRouteTable_  to the _PublicSubnet_ to associate the route table and subnet.
+
 #### Learn More
+
 ##### CFN Nag
-The _cfn-nag_ tool looks for patterns in CloudFormation templates that may indicate insecure infrastructure.
+The _cfn-nag_ tool looks for patterns in CloudFormation templates that may indicate insecure infrastructure.  
+
 __Install cfn-nag__
 ```bash
 # Install gem if you don't already have it installed
@@ -289,19 +295,63 @@ $  cfn_nag_scan --input-path  SPATemplate.yaml
 
 [cfn-nag Github](https://github.com/stelligent/cfn_nag)
 
+#### CloudFormation template linting and validator
+__Cloudformation validator__  
+Use can use the native cloudformation validator for syntax validation of your template
+```
+$ aws cloudformation validate-template --template-body file://template.yaml
+```
+
+__CloudFormation Linter: cfn-lint__  
+Install cfn-lint if you have not already done to
+```bash
+# Using pip
+$ pip install cfn-lint
+# Or using homebrew
+$ brew install cfn-lint
+```
+Validate cloudformation template using cfn-lint
+```
+$ cfn-lint template.yaml
+```
+
+Validate multiple templates at the same time
+```bash
+$ cfn-lint template1.yaml template2.yaml
+# Using wildcards
+$ cfn-lint path/**/*.yaml
+```
+
+[GitHub cnf-lint](https://github.com/aws-cloudformation/cfn-lint)
+
 #### Common Commands
 __CLI: aws cloudformation__  
 
-Operation           | Command
---------------------|------------
-Validate a template | `aws cloudformation validate-template --template-body file://StaticWebsiteTemplate.yaml`
-Show events log | `aws cloudformation describe-stack-events --stack-name StaticWebsiteTemplate`
+Operation                | Command
+-------------------------|------------
+Validate a template      | `aws cloudformation validate-template --template-body file://StaticWebsiteTemplate.yaml`
+Show events log          | `aws cloudformation describe-stack-events --stack-name StaticWebsiteTemplate`
+Create or update a stack | `aws cloudformation deploy --template-file template.yaml  --stack-name StackName`
+View stack outputs       | `aws cloudformation describe-stacks --stack-name StackName  --query "Stacks[0].Outputs" --no-cli-pager`
+Create a change set      | `aws cloudformation create-change-set --template-body file://template.yaml --stack-name StackName --parameters file://parameters.json`
+View diff of change set  | `aws cloudformation describe-change-set --change-set-name ChangeName --stack-name StackName > diff.json`   
+Apply a change set       | `aws cloudformation execute-change-set --stack-name StackName --change-set-name ChangeName`
+Delete a change set      | `aws cloudformation delete-change-set --stack-name StackName --change-set-name ChangeName`
+Delete a stack           | `aws cloudformation delete-stack --stack-name StackName`
 
 __CLI: rain__
 
-Operation           | Command
---------------------|------------
-Show events log     | `rain logs StaticWebsiteTemplate`
+Operation                | Command
+-------------------------|------------
+Create or update a stack | `rain deploy Template.yaml StackName --config params.yaml`
+Show events log          | `rain logs StackName`
+List all stacks          | `rain ls`
+Delete a stack           | `rain rm StackName`
+
+You can always use the `--region` or `--profile` flag as needed.  
+
+#### Resources
+[Supported AWS-specific parameter types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html#aws-specific-parameter-types-supported)  
 
 #### Resources Reference
 Resource  | Reference
