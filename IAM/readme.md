@@ -40,7 +40,7 @@ __Identity-based policies__ can be further categorized:
   * __Customer managed policies__: Managed policies that you create and manage in your AWS account.
 2. __Inline policies__:  Policies that you create and manage and that are embedded directly into a single user, group, or role. In most cases, we don't recommend using inline policies.  
 
-__Resource-based__ policies are inline policies, and there are no managed resource-based policies.  
+__Resource-based policies__ are inline policies, and there are no managed resource-based policies.  
 To enable cross-account access, you can specify an entire account or IAM entities in another account as the principal in a resource-based policy.  
 
 The IAM service supports only one type of resource-based policy called a _role trust policy_, which is attached to an IAM role. Because an IAM role is both an identity and a resource that supports resource-based policies, you must attach both a trust policy and an identity-based policy to an IAM role. _Trust policies_ define which principal entities (accounts, users, roles, and federated users) can assume the role.
@@ -95,7 +95,10 @@ $ aws iam list-role-policies --role-name MediaConvertS3Role
 ```
 Inline policies have a one-to-one relationship with the Principal (role, user or group). This means that if we delete the IAM role, the inline policy also gets deleted.  
 
+
+
 __Resources__  
+[AWS Managed Polices](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html)  
 [Create a Role with AWS CLI - Complete Guide](https://bobbyhadz.com/blog/aws-cli-create-role)    
 [AWS IAM Policies with Examples](https://medium.com/tensult/aws-policies-with-examples-8340661d35e9)   
 [AWS IAM Policies : Creating an IAM Policy & Best Practices](https://spacelift.io/blog/iam-policy)   
