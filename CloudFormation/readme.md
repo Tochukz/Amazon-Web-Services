@@ -25,7 +25,7 @@ If you need to make changes to the running resources in a stack, you update the 
 Before making changes to your resources, you can generate a change set, which is a summary of your proposed changes.   
 Change sets allow you to see how your changes might impact your running resources, especially for critical resources, before implementing them.     
 
-### How AWS CloudFormation workS
+### How AWS CloudFormation works
 1. Use the _AWS CloudFormation Designer_ or your own text editor to create or modify a CloudFormation template in JSON or YAML format. Or use an existing template.  
 2. Save the template locally or in an Amazon S3 bucket.  
 3. Create a CloudFormation stack by specifying the location of your template file, such as a path on your local computer or an Amazon S3 URL. If the template contains parameters, you can specify input values when you create the stack.  You may use the _CloudFormation console_, API, or AWS CLI to create the stack.  
@@ -350,20 +350,30 @@ Delete a stack           | `rain rm StackName`
 
 You can always use the `--region` or `--profile` flag as needed.  
 
+#### CloudFormation deploy issues
+When a CloudFormation stack is stuck in the _UPDATE_ROLLBACK_FAILED_ state, it can be challenging to recover.   
+This happens when CloudFormation attempts to roll back a failed update but encounters issues during the rollback process itself. Here's how to address this situation:
+1. Identify the failure reason
+```bash
+$ aws cloudformation describe-stack-events --stack-name VpcEndpoint > events.json
+```
+Search for _UPDATE_ROLLBACK_FAILED_ in the stack events output file.
+2. Fix underlying issues
+3. Continue the rollback
+```bash
+$ aws cloudformation continue-update-rollback --stack-name VpcEndpoint
+```
+4. If specific resources are causing problems, skip them using the Logical Id
+```bash
+$ aws cloudformation continue-update-rollback --stack-name VpcEndpoint --resources-to-skip VpcEndpointToS3
+```
+5. Try the update again
+```bash
+$ aws cloudformation deploy --template-file VpcEndpoint.yaml --stack-name VpcEndpoint
+```
+
 #### Resources
 [Supported AWS-specific parameter types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-supplied-parameter-types.html#aws-specific-parameter-types-supported)  
 
-#### Resources Reference
-Resource  | Reference
-----------|------------
-DynamoDB  | [AWS::DynamoDB](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DynamoDB.html)
-EC2       | [AWS::EC2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EC2.html)
-EC2 Instance | [AWS::EC2::Instance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html)  
-EC2 VPC   | [AWS::EC2::VPC](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html)
-ECS       | [AWS::ECS](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ECS.html)  
-ECR       | [AWS::ECR](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ECR.html)
-Lambda    | [AWS::Lambda](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Lambda.html)
-S3        | [AWS::S3](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3.html)  
-S3 Bucket | [AWS::S3::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html)
 
 [How do I resolve template validation or template format errors in CloudFormation?](https://aws.amazon.com/premiumsupport/knowledge-center/cloudformation-template-validation/)  
