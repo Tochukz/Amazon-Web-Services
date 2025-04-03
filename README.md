@@ -28,6 +28,7 @@ __Resources__
 [AWS Samples](https://github.com/aws-samples)   
 [AWS Solutions](https://github.com/aws-solutions/)  
 [AWS Solution Library](https://aws.amazon.com/solutions/)  
+[AWS Architecture Center](https://aws.amazon.com/architecture)
 
 __Useful links__   
 [AWS Certified Solutions Architech-2017](https://github.com/Tochukz/Amazon-Web-Services/tree/master/AWS-Certified-Solutions-Architech-2017)  
